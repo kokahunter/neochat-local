@@ -9,7 +9,7 @@
 </p>
 
 ## Purpose
-The goal of this project is to provide a chat dApps running on nOs for encrypted messaging on the NEO blockchain. This is a MVP and WIP, for example encyption is not yet implemented. 
+The goal of this project is to provide a chat dApp running on nOs for encrypted messaging on the NEO blockchain. This is a MVP and WIP, for example encyption is not yet implemented. 
 
 
 ## Setup
