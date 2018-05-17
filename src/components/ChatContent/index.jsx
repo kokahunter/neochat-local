@@ -15,14 +15,16 @@ class ChatContent extends React.Component {
         super(props);
         this.state = {
             inputAddress: "",
-            message: ""
+            message: "",
+            count: 0
         }
     }
     handleChangeAddr(event) {
         this.setState({inputAddress: event.target.value})
       }
       handleChangeMsg(event) {
-        this.setState({message: event.target.value})
+        this.setState({message: event.target.value});
+        this.setState({count: this.state.message.length + 1});
     }
   render() {
       if (this.props.activeAddress == "new"){
@@ -53,7 +55,7 @@ class ChatContent extends React.Component {
             <React.Fragment>   
                 <div>
                     {
-                        <div style={{paddingBottom:10 + "px"}}>
+                        <div style={{paddingBottom:10 + "px",marginBottom: 5 + "px",overflow: "auto", maxHeight:500 + "px"}}>
                             {
                                 this.props.chatMessages.map(t=> {
                                     if(t.direction == "receive"){
@@ -87,17 +89,19 @@ class ChatContent extends React.Component {
                     }
                     {            
                     <div className="newMessage" align="bottom" style={{}}>
-                        <input value={this.state.message} onChange={this.handleChangeMsg.bind(this)} key="newMessage" />
+                        <input maxLength="254" value={this.state.message} onChange={this.handleChangeMsg.bind(this)} key="newMessage" />
                         <button
                             onClick={({}) => {
                                                 this.props.onInvokeSend(this.props.activeAddress,this.state.message);
                                                 this.setState({
-                                                    message: ""
+                                                    message: "",
+                                                    count: 0
                                                 });
                                             }}
                         >
-                            Send
-                        </button>
+                            Send 
+                        </button> 
+                        {this.state.count} / 255
                     </div>
                     }
                 </div>

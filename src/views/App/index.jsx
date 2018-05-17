@@ -54,11 +54,11 @@ class App extends React.Component {
 
   getRecvCount = async (scriptHash, addr) =>
     this.setState({
-      recvCount: await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive.latest")
+      recvCount: parseInt(await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive.latest"),16)
     })
   getSendCount = async (scriptHash, addr) => {
     this.setState({
-      sendCount: await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".send.latest")
+      sendCount: parseInt(await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".send.latest"), 16)
     })
   }
 
@@ -184,7 +184,7 @@ class App extends React.Component {
 
       //get item length
       var itemLength = parseInt(rawSplitted[offset], 16);
-      //console.log("itemLength" + itemLength)
+      console.log("itemLength" + itemLength)
       offset += 1;
       //console.log(offset);
       let data = this.concatBytes(rawSplitted,offset,itemLength + offset);
