@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" width="150px" /> 
+  <img src="./neochat.png" /> 
 </p>
 
 <h1 align="center">neochat</h1>
