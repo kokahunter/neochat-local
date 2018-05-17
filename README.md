@@ -20,6 +20,12 @@ $ yarn
 $ yarn start
 ```
 
+Smart contract
+```
+build /smart-contracts/neochat.py
+import contract /smart-contracts/neochat.avm 0710 05 True False
+```
+
 ## Testing
 Use `yarn test:local` or `npm run test:local` to run all tests locally. The `test` command is reserved for CI builds.
 
