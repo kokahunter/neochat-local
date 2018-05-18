@@ -150,6 +150,25 @@ class App extends React.Component {
       });
     }
   }
+  deserializeStackItem = item => {
+    var offset = 0;
+    var type = parseInt(item[offset], 16);
+    offset += 1
+    switch(type){
+      case 0: //bytearray
+      case 1: //boolean
+      case 2: //Integer
+      case 64: //  InteropInterface
+      case 128: // array
+        //get array count
+      case 129: //struct
+      case 130: //map
+      default:
+        break;
+    }
+
+  }
+
   /**
  * Deserializes a serialized array that's passed as a hexstring
  * @param {hexstring} rawData
@@ -184,14 +203,61 @@ class App extends React.Component {
 
       //get item length
       var itemLength = parseInt(rawSplitted[offset], 16);
-      console.log("itemLength" + itemLength)
+      //serialize: https://github.com/neo-project/neo-vm/blob/master/src/neo-vm/Helper.cs#L41-L64
       offset += 1;
+      if(itemLength == 253){
+        //new itemlentgh = reverse int of next 2
+        itemLength = parseInt(u.reverseHex(this.concatBytes(rawSplitted,offset, offset + 2)),16);
+        offset += 2;
+
+        /*d
+          writer.Write((byte)0xFD);
+          writer.Write((ushort)value);
+        */
+       /*s
+        value = reader.ReadUInt16();
+       */
+      }
+      else if(itemLength == 254){
+        //new itemlentgh = reverse int of next 4
+        itemLength = parseInt(u.reverseHex(this.concatBytes(rawSplitted,offset, offset + 2)),16);
+        offset += 4;
+        /*d
+          writer.Write((byte)0xFE);
+          writer.Write((uint)value);
+        */
+       /*s
+       value = reader.ReadUInt32();
+       */
+      }
+      else if (itemLength == 255)
+      {
+        //new itemlentgh = reverse int of next 8
+        itemLength = parseInt(u.reverseHex(this.concatBytes(rawSplitted,offset, offset + 2)),16);
+        offset += 8;
+          /*d
+          writer.Write((byte)0xFF);
+          writer.Write(value);*/
+          /*s
+          value = reader.ReadUInt64();
+          */
+      }
+      else{
+          /*d
+           writer.Write((byte)value);
+          */
+         /*s
+          value = fb;
+         */
+      }
+      //console.log("itemLength" + itemLength)
       //console.log(offset);
       let data = this.concatBytes(rawSplitted,offset,itemLength + offset);
+      //console.log(data);
       if (itemType == 2){
         //console.log("data: " + parseInt(u.reverseHex(data),16));
         data = u.reverseHex(data);
-        console.log ("TIME" + data);
+        //console.log ("TIME" + data);
       }
       else if(itemType == 0){
         //[unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
