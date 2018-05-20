@@ -85,7 +85,7 @@ class ChatContent extends React.Component {
             <React.Fragment>   
                 <Row className={classes.chatHeader}>
                     <Col className={classes.chatHeaderInner} sm={12}>
-                        <h2>Welcome to NeoChat on nOS!</h2>
+                        <span className={classes.headerText2}>Welcome to NeoChat on nOS!</span>
                     </Col>
                 </Row>
                 <Row className={classes.chatMessages}>
@@ -93,7 +93,7 @@ class ChatContent extends React.Component {
                         <Row key="welcome" className={classes.message}>
                             <Col className={classes.messageReceive} sm={12}>
                                 <div className={classes.receiver}>
-                                    <h3>Getting startet</h3>
+                                    <span className={classes.headerText3} >Getting startet</span>
                                     <div className={classes.messageText}>
                                         New message, load, send.
                                     </div>
@@ -104,7 +104,7 @@ class ChatContent extends React.Component {
                 </Row>
                 <Row className={classes.chatReply}>
                     <Col className={classes.welcomeFooter} sm={12}>
-                        <h4>NeoChat on Github: https://github.com/kokahunter/neochat-local/</h4>
+                        <span className={classes.headerText4}>NeoChat on Github: https://github.com/kokahunter/neochat-local/</span>
                     </Col>
                 </Row>
             </React.Fragment>
@@ -133,7 +133,7 @@ class ChatContent extends React.Component {
             <React.Fragment>   
                 <Row className={classes.chatHeader}>
                     <Col className={classes.chatHeaderInner} sm={12}>
-                        <h2>{this.props.activeAddress}</h2>
+                        <span className={classes.headerText2}>{this.props.activeAddress}</span>
                     </Col>
                 </Row>
                 <Row className={classes.chatMessages}>

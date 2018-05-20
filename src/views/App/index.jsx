@@ -411,7 +411,7 @@ class App extends React.Component {
                     </div>
                   </Col>
                   <Col className={classes.siderHeaderInner} sm={10}>
-                    <h5>{this.state.userAddress}</h5>
+                    <span className={classes.headerText5}>{this.state.userAddress}</span>
                   </Col>
                   <Col className={classes.siderHeaderInner} sm={1}>
                     <DropdownButton
@@ -654,6 +654,30 @@ const styles = {
     width: 100 + "%",
     padding: 0,
     margin: 0
+  },
+  headerText2: {
+    margin:0 + "px",
+    display: "block",
+    fontSize: 1.7 + "em",
+    fontWweight: "bold"
+  },
+  headerText3: {
+    margin:0 + "px",
+    display: "block",
+    fontSize: 1.5 + "em",
+    fontWweight: "bold"
+  },
+  headerText4: {
+    margin:0 + "px",
+    display: "block",
+    fontSize: 1.17 + "em",
+    fontWweight: "bold"
+  },
+  headerText5: {
+    margin:0 + "px",
+    display: "block",
+    fontSize: 1 + "em",
+    fontWweight: "bold"
   }
 };
 
