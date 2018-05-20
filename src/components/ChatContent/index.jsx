@@ -6,7 +6,6 @@ import { Icon, Row, Col } from 'antd';
 
 const styles = {
   chat: {
-    background: "#000000"
   }
 };
 
@@ -55,7 +54,7 @@ class ChatContent extends React.Component {
             <React.Fragment>   
                 <div>
                     {
-                        <div style={{paddingBottom:10 + "px",marginBottom: 5 + "px",overflow: "auto", maxHeight:500 + "px"}}>
+                        <div style={{paddingBottom:10 + "px",marginBottom: 5 + "px",overflow: "auto"}}>
                             {
                                 this.props.chatMessages.map(t=> {
                                     if(t.direction == "receive"){

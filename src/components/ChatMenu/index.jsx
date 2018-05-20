@@ -25,8 +25,32 @@ class ChatMenu extends React.Component {
                 mode="inline"
                 defaultSelectedKeys={['2']}
                 defaultOpenKeys={['2']}
-                style={{ height: '100%' }}
+                style={{ height: '100vh', whiteSpace: "nowrap", overflowX: "hidden", overflowY: "auto"}}
               >
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
+                <Menu.Item key="reload">
+                  <Icon type="reload" />
+                  <span>load /reload</span>
+                </Menu.Item>
                 <Menu.Item key="reload">
                   <Icon type="reload" />
                   <span>load /reload</span>
