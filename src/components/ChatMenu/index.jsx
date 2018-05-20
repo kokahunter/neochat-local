@@ -7,7 +7,6 @@ import Col from 'react-bootstrap/lib/Col';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
-const { SubMenu } = Menu;
 
 const styles = {
   button: {
