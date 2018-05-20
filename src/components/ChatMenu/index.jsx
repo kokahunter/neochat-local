@@ -3,7 +3,11 @@ import injectSheet from "react-jss";
 import { injectNOS } from "../../nos";
 import { injectStore } from "./../../store";
 import { Menu, Icon } from 'antd';
-
+import Row from 'react-bootstrap/lib/Row';
+import Col from 'react-bootstrap/lib/Col';
+import Nav from 'react-bootstrap/lib/Nav';
+import NavItem from 'react-bootstrap/lib/NavItem';
+import Navbar from 'react-bootstrap/lib/Navbar';
 const { SubMenu } = Menu;
 
 const styles = {
@@ -17,57 +21,27 @@ class ChatMenu extends React.Component {
   /*handleClick = (e) => {
     console.log(e.key);
   }*/
+  clickBack = e => {
+    alert(console.log(e));
+  }
   render() {
+    const { classes, onClick } = this.props; 
     return (
       <React.Fragment>
-              <Menu
-                onClick={this.props.onClick}
-                mode="inline"
-                defaultSelectedKeys={['2']}
-                defaultOpenKeys={['2']}
-                style={{ height: '100vh', whiteSpace: "nowrap", overflowX: "hidden", overflowY: "auto"}}
-              >
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="reload">
-                  <Icon type="reload" />
-                  <span>load /reload</span>
-                </Menu.Item>
-                <Menu.Item key="new">
-                  <Icon type="message" />
-                  <span>New message</span>
-                </Menu.Item>
-                <SubMenu key="2" title={<span><Icon type="inbox" /><span>Chats</span></span>}>
-                  {
-                    Object.keys(this.props.menu).map(function(key){
-                      const item = this.props.menu[key];
-                      return <Menu.Item key={key}>{item}</Menu.Item>
-                    }.bind(this))
-                  }
-              </SubMenu>
-              </Menu>
+              <Nav 
+                bsStyle="pills" 
+                stacked 
+                onSelect={onClick} 
+                className={classes.noMargin}
+                activeKey={this.props.activeAddress}>
+              {
+                Object.keys(this.props.menu).map(function(key){
+                  const item = this.props.menu[key];
+                  return (
+                      <NavItem eventKey={item} className={classes.siderChatBody} href="#">{item}</NavItem>
+                  )}.bind(this))
+              }
+              </Nav>
       </React.Fragment>
     );
   }

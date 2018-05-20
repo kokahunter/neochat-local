@@ -18,8 +18,11 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon'; 
 import Button from 'react-bootstrap/lib/Button'; 
+import MenuItem from 'react-bootstrap/lib/MenuItem'; 
+import DropdownButton from 'react-bootstrap/lib/DropdownButton'; 
 
 import NosGrey from "./../../nos_grey.svg"
+import NeoLogo from "./../../neo.svg"
 
 import {unhexlify,hexlify} from 'binascii';
 //const { SubMenu } = Menu;
@@ -34,7 +37,7 @@ class App extends React.Component {
       sendCount: 0,
       chatMessages: {
       },
-      activeAddress: "new",
+      activeAddress: "welcome",
       userAddress: "",
       menu: { },
       filteredMessages:[],
@@ -307,7 +310,7 @@ class App extends React.Component {
 
     handleClick = (e) => {
       
-      var clickKey = e.key;
+      var clickKey = e;
       if(clickKey.length == 34){
         //address handle chat filtered state messages
         console.log("OK");
@@ -403,7 +406,33 @@ class App extends React.Component {
             <Col className={classes.sider} sm={4}>
               <div className={classes.siderMain}>
                 <Row className={classes.chatHeader}>
-                  <Col className={classes.siderHeaderInner} sm={12}>header</Col>
+                  <Col className={classes.siderHeaderInner} sm={1}>
+                    <div className={classes.siderHeaderLogo}>
+                      <img className="img-responsive" src={NeoLogo} />
+                    </div>
+                  </Col>
+                  <Col className={classes.siderHeaderInner} sm={10}>
+                    <h5>{this.state.userAddress}</h5>
+                  </Col>
+                  <Col className={classes.siderHeaderInner} sm={1}>
+                    <DropdownButton
+                      bsStyle="default"
+                      title={
+                        <div style={{ display: 'inline-block' }}> 
+                          <Glyphicon glyph="cog" />
+                        </div>
+                      }
+                      noCaret
+                      key="1"
+                      bsSize="small"
+                      id={`dropdown-setting-1`}
+                    >
+                      <MenuItem eventKey="reload" onSelect={this.handleClick}>Load messages</MenuItem>
+                      <MenuItem eventKey="new" onSelect={this.handleClick}>New message</MenuItem>
+                      <MenuItem divider />
+                      <MenuItem eventKey="welcome" onSelect={this.handleClick}>About</MenuItem>
+                    </DropdownButton>
+                  </Col>
                 </Row>
                 <Row className={classes.siderSearch}>
                   <Col className={classes.siderSearchInner} sm={12}>
@@ -418,81 +447,13 @@ class App extends React.Component {
                 </Row>
                 <Row className={classes.siderChats}>
                   <Col className={classes.siderChatsInner} sm={12}>
-                    <Row className={classes.siderChatBody}>
-                      <Col className={classes.siderChatAddr} sm={12}>
-                        addr
-                      </Col>
-                    </Row>
-                    <Row className={classes.siderChatBody}>
-                      <Col className={classes.siderChatAddr} sm={12}>
-                        addr
-                      </Col>
-                    </Row>
-                    <Row className={classes.siderChatBody}>
-                      <Col className={classes.siderChatAddr} sm={12}>
-                        addr
-                      </Col>
-                    </Row>
-                    <Row className={classes.siderChatBody}>
-                      <Col className={classes.siderChatAddr} sm={12}>
-                        addr
-                      </Col>
-                    </Row>
-                    <Row className={classes.siderChatBody}>
-                      <Col className={classes.siderChatAddr} sm={12}>
-                        addr
-                      </Col>
-                    </Row>
+                    <ChatMenu activeAddress={this.state.activeAddress} menu={this.state.menu} onClick={this.handleClick} classes={classes}/>
                   </Col>
                 </Row>
               </div>
             </Col>
             <Col className={classes.chat} sm={8}>
-              <Row className={classes.chatHeader}>
-                <Col className={classes.chatHeaderInner} sm={12}>
-                  chat header
-                </Col>
-              </Row>
-              <Row className={classes.chatMessages}>
-                <Col sm={12} className={classes.chatMessagesBody}>
-                  <Row className={classes.message}>
-                    <Col className={classes.messageReceive} sm={12}>
-                      <div className={classes.receiver}>
-                        receive messagesfxdbv ysfg 453a bdfg45 cvfg 45eh dfb xfv s h4e6 hxfgdh 45se hdfh 45 hfghxh hd xh s45h xgdfbh 64shfxgh 
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row className={classes.message}>
-                    <Col className={classes.messageSend} sm={12}>
-                      <div className={classes.sender}>
-                      a bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfva bdfg45 cvfg 45eh dfb xfv
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row className={classes.message}>
-                    <Col className={classes.messageSend} sm={12}>
-                      <div className={classes.sender}>
-                        Hello NEO
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Row className={classes.chatReply}>
-                <Col className={classes.replyEmojis} sm={1}>
-                  emojis
-                </Col>
-                <Col className={classes.replyInput} sm={11}>
-                  <FormGroup controlId="formValidationSuccess3">
-                    <InputGroup>
-                      <FormControl type="text" />
-                      <InputGroup.Button>
-                        <Button><Glyphicon glyph="send" /></Button>
-                      </InputGroup.Button>
-                    </InputGroup>
-                  </FormGroup>
-                </Col>
-              </Row>
+              <ChatContent activeAddress={this.state.activeAddress} onInvokeSend={this.invokeSendChat} chatMessages={this.state.filteredMessages} classes={classes}/>
             </Col>
           </Row>
         </Grid>
@@ -547,7 +508,9 @@ const styles = {
     height: 100+ "%",
   },
   siderHeaderInner: {
-
+    height: 100 + "%",
+    padding: 0,
+    margin: 0,
   },
   siderSearch: {
     padding: 0,
@@ -563,6 +526,7 @@ const styles = {
     margin: 0,
     height: "calc(" + 100 + "% - " + 120 + "px)",
     overflowY: "auto",
+    overflowX: "hidden",
     backgroundColor: "#fff",
     border: 1 + "px solid #f7f7f7"
   },
@@ -570,11 +534,27 @@ const styles = {
     width: 100 + "%"
   },
   siderChatsInner: {
+    padding: 0,
+    margin: 0
   },
   siderChatBody: {
     height: 65 + "px",
     margin: 0,
-    borderBottom: 1 + "px solid #f7f7f7"
+    border: "none",
+    borderBottom: 1 + "px solid #f7f7f7",
+    position: "relative",
+    padding: 0 +"px",
+    borderTopLeftRadius: 0 + "!important",
+    borderTopRightRadius:0 + "!important",
+    borderBottomLeftRadius: 0 + "!important",
+    borderBottomRightRadius:0 + "!important",
+    cursor: "pointer",
+    '&:hover': {
+      backgroundColor: "#f2f2f2"
+    }
+  },
+  noMargin: {
+    margin: 0 + "!important"
   },
   chat: {
     borderLeft: 1 + "px solid rgba(0, 0, 0, .1);",
@@ -587,7 +567,8 @@ const styles = {
     background: "#ececec",
     height: 60 + "px",
     margin: 0,
-    zIndex: 447
+    zIndex: 447,
+    padding: "10px 5px 10px 5px"
   },
   chatHeaderInner: {
   },
@@ -619,6 +600,21 @@ const styles = {
     marginLeft: "20%",
     padding: "2px 20px"
   },
+  messageText: {
+    margin: 0,
+    padding: 5 + "px",
+    fontSize: 14 + "px",
+    wordWrap: "break-word",
+    fontWeight: 200,
+    paddingBottom: 0
+  },
+  messageTime: {
+    margin: 0,
+    fontSize: 12 + "px",
+    textAlign: "right",
+    color: "#949494",
+    float: "right"
+  },
   chatReply: {
     height: 60 + "px",
     backgroundColor: "#F0F0F0",
@@ -626,6 +622,9 @@ const styles = {
     padding: "10px 5px 10px 5px"
   },
   replyEmojis: {
+
+  },
+  welcomeFooter: {
 
   },
   replyInput: {
@@ -650,6 +649,12 @@ const styles = {
     padding: "4px 10px 7px 10px",
     textShadow: "0 1px 1px rgba(0, 0, 0, .2)",
     borderRadius: "13px 0 13px 13px"
+  },
+  siderHeaderLogo: {
+    height: 100 +"%",
+    width: 100 + "%",
+    padding: 0,
+    margin: 0
   }
 };
 
