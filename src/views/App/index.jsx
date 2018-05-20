@@ -12,6 +12,13 @@ import { str2hexstring, int2hex, hexstring2str} from "@cityofzion/neon-js/src/ut
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Grid from 'react-bootstrap/lib/Grid';
+import Form from 'react-bootstrap/lib/Form';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon'; 
+import Button from 'react-bootstrap/lib/Button'; 
+
 import NosGrey from "./../../nos_grey.svg"
 
 import {unhexlify,hexlify} from 'binascii';
@@ -399,7 +406,15 @@ class App extends React.Component {
                   <Col className={classes.siderHeaderInner} sm={12}>header</Col>
                 </Row>
                 <Row className={classes.siderSearch}>
-                  <Col className={classes.siderSearchInner} sm={12}>search</Col>
+                  <Col className={classes.siderSearchInner} sm={12}>
+                    <FormGroup>
+                      <FormControl
+                        type="text"
+                        placeholder="Search Address"
+                        onChange={this.handleChange}
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
                 <Row className={classes.siderChats}>
                   <Col className={classes.siderChatsInner} sm={12}>
@@ -454,17 +469,28 @@ class App extends React.Component {
                       </div>
                     </Col>
                   </Row>
+                  <Row className={classes.message}>
+                    <Col className={classes.messageSend} sm={12}>
+                      <div className={classes.sender}>
+                        Hello NEO
+                      </div>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
               <Row className={classes.chatReply}>
                 <Col className={classes.replyEmojis} sm={1}>
                   emojis
                 </Col>
-                <Col className={classes.replyInput} sm={10}>
-                  input
-                </Col>
-                <Col className={classes.replySend} sm={1}>
-                  send
+                <Col className={classes.replyInput} sm={11}>
+                  <FormGroup controlId="formValidationSuccess3">
+                    <InputGroup>
+                      <FormControl type="text" />
+                      <InputGroup.Button>
+                        <Button><Glyphicon glyph="send" /></Button>
+                      </InputGroup.Button>
+                    </InputGroup>
+                  </FormGroup>
                 </Col>
               </Row>
             </Col>
@@ -527,17 +553,21 @@ const styles = {
     padding: 0,
     margin: 0,
     backgroundColor: "#f7f7f7",
-    height: 55 + "px"
+    height: 60 + "px",
+    padding: "10px 5px 10px 5px"
   },
   siderSearchInner: {
   },
   siderChats: {
     padding: 0,
     margin: 0,
-    height: "calc(" + 100 + "% - " + 110 + "px)",
+    height: "calc(" + 100 + "% - " + 120 + "px)",
     overflowY: "auto",
     backgroundColor: "#fff",
     border: 1 + "px solid #f7f7f7"
+  },
+  chatSearch: {
+    width: 100 + "%"
   },
   siderChatsInner: {
   },
@@ -547,7 +577,7 @@ const styles = {
     borderBottom: 1 + "px solid #f7f7f7"
   },
   chat: {
-    borderLeft: 0.1 + "em solid rgba(0, 0, 0, .1);",
+    borderLeft: 1 + "px solid rgba(0, 0, 0, .1);",
     height: 100+ "%",
     //overflowY: "auto",
     margin: 0,
@@ -555,7 +585,7 @@ const styles = {
   },
   chatHeader: {
     background: "#ececec",
-    height: 55 + "px",
+    height: 60 + "px",
     margin: 0,
     zIndex: 447
   },
@@ -565,7 +595,7 @@ const styles = {
     padding: 0,
     margin: 0,
     overflowY: "auto",
-    height: "calc(" + 100 + "% - " + 110 + "px)",
+    height: "calc(" + 100 + "% - " + 120 + "px)",
     border: 1 + "px solid #f7f7f7",
     backgroundImage: "url("+NosGrey+")",
     backgroundSize: "cover"
@@ -582,26 +612,25 @@ const styles = {
     padding: "2px 20px"
   },
   messageReceive: {
-    maxWidth: "60%"
+    maxWidth: "80%"
   },
   messageSend: {
-    maxWidth: "60%",
-    marginLeft: "40%",
+    maxWidth: "80%",
+    marginLeft: "20%",
     padding: "2px 20px"
   },
   chatReply: {
-    height: 55 + "px",
+    height: 60 + "px",
     backgroundColor: "#F0F0F0",
-    margin: 0
+    margin: 0,
+    padding: "10px 5px 10px 5px"
   },
   replyEmojis: {
 
   },
   replyInput: {
-
   },
   replySend: {
-
   },
   receiver: {
     width: "auto",
