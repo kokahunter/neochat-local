@@ -8,7 +8,6 @@ import { u, wallet } from "@cityofzion/neon-js";
 import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
 import { str2hexstring, int2hex, hexstring2str} from "@cityofzion/neon-js/src/utils";
-//import { Layout, Menu, Breadcrumb, Icon, Input } from 'antd';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Grid from 'react-bootstrap/lib/Grid';

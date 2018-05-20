@@ -2,7 +2,6 @@ import React from "react";
 import injectSheet from "react-jss";
 import { injectNOS } from "../../nos";
 import { injectStore } from "./../../store";
-import { Menu, Icon } from 'antd';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Nav from 'react-bootstrap/lib/Nav';
