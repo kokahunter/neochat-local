@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { create as createJss } from "jss";
 import camelCase from "jss-camel-case";
+import nested from "jss-nested";
 import globalStyles from "jss-global";
 import vendorPrefixer from "jss-vendor-prefixer";
 import { JssProvider } from "react-jss";
@@ -15,7 +16,7 @@ import { Provider } from "./nos";
 
 const jss = createJss();
 
-jss.use(vendorPrefixer(), camelCase(), globalStyles());
+jss.use(vendorPrefixer(), camelCase(), globalStyles(), nested());
 
 
 class NeoChat extends React.Component {

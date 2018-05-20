@@ -8,12 +8,25 @@ import { u, wallet } from "@cityofzion/neon-js";
 import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
 import { str2hexstring, int2hex, hexstring2str} from "@cityofzion/neon-js/src/utils";
-import { Layout, Menu, Breadcrumb, Icon, Input } from 'antd';
-import {unhexlify,hexlify} from 'binascii';
+import Row from 'react-bootstrap/lib/Row';
+import Col from 'react-bootstrap/lib/Col';
+import Grid from 'react-bootstrap/lib/Grid';
+import Form from 'react-bootstrap/lib/Form';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon'; 
+import Button from 'react-bootstrap/lib/Button'; 
+import MenuItem from 'react-bootstrap/lib/MenuItem'; 
+import DropdownButton from 'react-bootstrap/lib/DropdownButton'; 
 
-const { SubMenu } = Menu;
-const { Header, Content, Footer, Sider } = Layout;
-const Search = Input.Search;
+import NosGrey from "./../../nos_grey.svg"
+import NeoLogo from "./../../neo.svg"
+
+import {unhexlify,hexlify} from 'binascii';
+//const { SubMenu } = Menu;
+//const { Header, Content, Footer, Sider } = Layout;
+//const Search = Input.Search;
 
 class App extends React.Component {
   constructor(props) {
@@ -23,7 +36,7 @@ class App extends React.Component {
       sendCount: 0,
       chatMessages: {
       },
-      activeAddress: "new",
+      activeAddress: "welcome",
       userAddress: "",
       menu: { },
       filteredMessages:[],
@@ -296,7 +309,7 @@ class App extends React.Component {
 
     handleClick = (e) => {
       
-      var clickKey = e.key;
+      var clickKey = e;
       if(clickKey.length == 34){
         //address handle chat filtered state messages
         console.log("OK");
@@ -387,36 +400,62 @@ class App extends React.Component {
     const a2 = u.str2hexstring("test");
     const args2 = [a1,a1,a2,a2];
     return (
-      <Layout>
-        <Header className="header">
-          <div className="logo" />
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            defaultSelectedKeys={['1']}
-            style={{ lineHeight: '64px' }}
-          >
-            <Menu.Item key="1">NEO Chat</Menu.Item>
-          </Menu>
-        </Header>
-        <Content style={{ padding: '0 50px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>NeoChat</Breadcrumb.Item>
-            <Breadcrumb.Item>{this.state.activeAddress}</Breadcrumb.Item>
-          </Breadcrumb>
-          <Layout style={{ padding: '24px 0', background: '#fff' }}>
-          <Sider width={200} style={{ background: '#fff' }}>
-            <ChatMenu menu={this.state.menu} onClick={this.handleClick}/>    
-          </Sider>        
-            <Content style={{ padding: '0 24px', minHeight: 280}}>   
-              <ChatContent activeAddress={this.state.activeAddress} onInvokeSend={this.invokeSendChat} chatMessages={this.state.filteredMessages}/>
-            </Content>
-          </Layout>
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>
-          Your Address: {this.state.userAddress} | Sent Messages: {this.state.sendCount} | Received Messages: {this.state.recvCount}
-        </Footer>
-      </Layout>
+        <Grid className={classes.neoChat}>
+          <Row className={classes.neoChatBody}>
+            <Col className={classes.sider} sm={4}>
+              <div className={classes.siderMain}>
+                <Row className={classes.chatHeader}>
+                  <Col className={classes.siderHeaderInner} sm={1}>
+                    <div className={classes.siderHeaderLogo}>
+                      <img className="img-responsive" src={NeoLogo} />
+                    </div>
+                  </Col>
+                  <Col className={classes.siderHeaderInner} sm={10}>
+                    <h5>{this.state.userAddress}</h5>
+                  </Col>
+                  <Col className={classes.siderHeaderInner} sm={1}>
+                    <DropdownButton
+                      bsStyle="default"
+                      title={
+                        <div style={{ display: 'inline-block' }}> 
+                          <Glyphicon glyph="cog" />
+                        </div>
+                      }
+                      noCaret
+                      key="1"
+                      bsSize="small"
+                      id={`dropdown-setting-1`}
+                    >
+                      <MenuItem eventKey="reload" onSelect={this.handleClick}>Load messages</MenuItem>
+                      <MenuItem eventKey="new" onSelect={this.handleClick}>New message</MenuItem>
+                      <MenuItem divider />
+                      <MenuItem eventKey="welcome" onSelect={this.handleClick}>About</MenuItem>
+                    </DropdownButton>
+                  </Col>
+                </Row>
+                <Row className={classes.siderSearch}>
+                  <Col className={classes.siderSearchInner} sm={12}>
+                    <FormGroup>
+                      <FormControl
+                        type="text"
+                        placeholder="Search Address"
+                        onChange={this.handleChange}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className={classes.siderChats}>
+                  <Col className={classes.siderChatsInner} sm={12}>
+                    <ChatMenu activeAddress={this.state.activeAddress} menu={this.state.menu} onClick={this.handleClick} classes={classes}/>
+                  </Col>
+                </Row>
+              </div>
+            </Col>
+            <Col className={classes.chat} sm={8}>
+              <ChatContent activeAddress={this.state.activeAddress} onInvokeSend={this.invokeSendChat} chatMessages={this.state.filteredMessages} classes={classes}/>
+            </Col>
+          </Row>
+        </Grid>
     );
   }
 }
@@ -439,6 +478,182 @@ const styles = {
     width: "75%",
     borderTop: "1px solid #333333",
     margin: "32px auto"
+  },
+  neoChat: {  
+    overflow: "hidden",
+    padding: 0,
+    margin: "auto",
+    top: 19 + "px",
+    height: "calc("+100+"vh - " + 38 + "px)",
+    position: "relative",
+    boxShadow: "0 1px 1px 0 rgba(0, 0, 0, .06), 0 2px 5px 0 rgba(0, 0, 0, .2)"
+  },
+  neoChatBody: {
+    margin: 0,
+    padding: 0,
+    backgroundColor: "#f7f7f7",
+    height: 100 + "%",
+    overflow: "hidden"
+  },
+  sider: {
+    height: 100+ "%",
+    margin: 0,
+    padding: 0
+  },
+  siderMain: {
+    padding: 0,
+    margin: 0,
+    top: 0,
+    height: 100+ "%",
+  },
+  siderHeaderInner: {
+    height: 100 + "%",
+    padding: 0,
+    margin: 0,
+  },
+  siderSearch: {
+    padding: 0,
+    margin: 0,
+    backgroundColor: "#f7f7f7",
+    height: 60 + "px",
+    padding: "10px 5px 10px 5px"
+  },
+  siderSearchInner: {
+  },
+  siderChats: {
+    padding: 0,
+    margin: 0,
+    height: "calc(" + 100 + "% - " + 120 + "px)",
+    overflowY: "auto",
+    overflowX: "hidden",
+    backgroundColor: "#fff",
+    border: 1 + "px solid #f7f7f7"
+  },
+  chatSearch: {
+    width: 100 + "%"
+  },
+  siderChatsInner: {
+    padding: 0,
+    margin: 0
+  },
+  siderChatBody: {
+    height: 65 + "px",
+    margin: 0,
+    border: "none",
+    borderBottom: 1 + "px solid #f7f7f7",
+    position: "relative",
+    padding: 0 +"px",
+    borderTopLeftRadius: 0 + "!important",
+    borderTopRightRadius:0 + "!important",
+    borderBottomLeftRadius: 0 + "!important",
+    borderBottomRightRadius:0 + "!important",
+    cursor: "pointer",
+    '&:hover': {
+      backgroundColor: "#f2f2f2"
+    }
+  },
+  noMargin: {
+    margin: 0 + "!important"
+  },
+  chat: {
+    borderLeft: 1 + "px solid rgba(0, 0, 0, .1);",
+    height: 100+ "%",
+    //overflowY: "auto",
+    margin: 0,
+    padding: 0
+  },
+  chatHeader: {
+    background: "#ececec",
+    height: 60 + "px",
+    margin: 0,
+    zIndex: 447,
+    padding: "10px 5px 10px 5px"
+  },
+  chatHeaderInner: {
+  },
+  chatMessages: {
+    padding: 0,
+    margin: 0,
+    overflowY: "auto",
+    height: "calc(" + 100 + "% - " + 120 + "px)",
+    border: 1 + "px solid #f7f7f7",
+    backgroundImage: "url("+NosGrey+")",
+    backgroundSize: "cover"
+  },
+  chatMessagesBody: {
+    padding: 0,
+    margin: 0
+  },
+  message: {
+    padding: 0,
+    margin: 0,
+    width: "auto",
+    height: "auto",
+    padding: "2px 20px"
+  },
+  messageReceive: {
+    maxWidth: "80%"
+  },
+  messageSend: {
+    maxWidth: "80%",
+    marginLeft: "20%",
+    padding: "2px 20px"
+  },
+  messageText: {
+    margin: 0,
+    padding: 5 + "px",
+    fontSize: 14 + "px",
+    wordWrap: "break-word",
+    fontWeight: 200,
+    paddingBottom: 0
+  },
+  messageTime: {
+    margin: 0,
+    fontSize: 12 + "px",
+    textAlign: "right",
+    color: "#949494",
+    float: "right"
+  },
+  chatReply: {
+    height: 60 + "px",
+    backgroundColor: "#F0F0F0",
+    margin: 0,
+    padding: "10px 5px 10px 5px"
+  },
+  replyEmojis: {
+
+  },
+  welcomeFooter: {
+
+  },
+  replyInput: {
+  },
+  replySend: {
+  },
+  receiver: {
+    width: "auto",
+    background: "#FFF"    ,
+    display: "inline-block",
+    wordWrap: "break-word",
+    padding: "4px 10px 7px 10px",
+    textShadow: "0 1px 1px rgba(0, 0, 0, .2)",
+    borderRadius: "0 13px 13px 13px"
+  },
+  sender: {
+    width: "auto",
+    float: "right",
+    background: "#DCF8C7",
+    display: "inline-block",
+    wordWrap: "break-word",
+    padding: "4px 10px 7px 10px",
+    textShadow: "0 1px 1px rgba(0, 0, 0, .2)",
+    borderRadius: "13px 0 13px 13px"
+  },
+  siderHeaderLogo: {
+    height: 100 +"%",
+    width: 100 + "%",
+    padding: 0,
+    margin: 0
   }
 };
 
