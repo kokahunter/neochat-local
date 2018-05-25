@@ -1,7 +1,13 @@
 from boa.interop.Neo.Runtime import GetTime, Serialize, Deserialize, Notify
 from boa.interop.Neo.Storage import Get, Put
+from boa.interop.Neo.Action import RegisterAction
 
-from storage.StorageHelper import PutThree, GetThree
+from storage.StorageHelper import PutThree, GetThree, IncrementOne, updateAccCount
+
+#events
+OnFollow = RegisterAction('follow', 'uid', 'fuid')
+OnUnfollow = RegisterAction('unfollow', 'uid', 'fuid')
+OnRegister = RegisterAction('register', 'addr', 'uid')
 
 def register(ctx, args):
     """
@@ -11,7 +17,7 @@ def register(ctx, args):
         0 -> script hash of invoker
         1 -> unique user id
         2 -> display name
-    Account storage:
+    Account storage uid => array[]:
         0 -> script hash of invoker
         1 -> uid
         2 -> display name
@@ -36,6 +42,9 @@ def register(ctx, args):
             save_s = Serialize(save)
             # register the uid with user data
             Put(ctx, args[1], save_s)
+            # Increment total account count + 1
+            IncrementOne(ctx, "accounts")
+            OnRegister(addr,uid)
             return True
         Notify("User is already registered")
         return False
@@ -81,6 +90,7 @@ def changeName(ctx, uid, name):
     save_s = Serialize(save_d)
     Put(ctx, uid, save_s)
     return True
+
 def follow(ctx, uid, fAddr):
     """
     Follow another user
@@ -97,23 +107,24 @@ def follow(ctx, uid, fAddr):
             return False
         if not isFollowing(ctx, uid, fUid):
             # Count following += 1 for uid
-            a_save = Get(ctx, uid)
-            a_save_d = Deserialize(a_save)
-            a_count = a_save_d[6]
-            aa_count = a_count + 1
-            a_save_d[6] = aa_count
-            a_save_s = Serialize(a_save_d)
-            Put(ctx, uid, a_save_s)
+            ##a_save = Get(ctx, uid)
+            ##a_save_d = Deserialize(a_save)
+            ##a_count = a_save_d[6]
+            ##aa_count = a_count + 1
+            ##a_save_d[6] = aa_count
+            ##a_save_s = Serialize(a_save_d)
+            ##Put(ctx, uid, a_save_s)
+            aa_count = updateAccCount(ctx, uid, 6, False)
 
             # Count follower += 1 for fUid
-            b_save = Get(ctx, fUid)
-            b_save_d = Deserialize(b_save)
-            b_count = b_save_d[5]
-            bb_count = b_count + 1
-            b_save_d[5] = bb_count
-            b_save_s = Serialize(b_save_d)
-            Put(ctx, fUid, b_save_s)
-
+            ##b_save = Get(ctx, fUid)
+            ##b_save_d = Deserialize(b_save)
+            ##b_count = b_save_d[5]
+            ##bb_count = b_count + 1
+            ##b_save_d[5] = bb_count
+            ##b_save_s = Serialize(b_save_d)
+            ##Put(ctx, fUid, b_save_s)
+            bb_count = updateAccCount(ctx, fUid, 5, False)
 
             # Add follow to iterated storage for uid      
             t1 = [fUid, bb_count]
@@ -127,6 +138,8 @@ def follow(ctx, uid, fAddr):
 
             #Set follow indicator = true
             PutThree(ctx, uid, ".followcheck.", fUid, True)
+
+            OnFollow(uid,fUid)
             return True
         Notify("User already following")
         return False
@@ -155,22 +168,24 @@ def unFollow(ctx, uid, uFAddr, index_a, index_b):
             b_temp_d = Deserialize(b_temp)
             if a_temp_d[0] == uFUid and b_temp_d[0] == uid:
                 # Count unfollowing += 1 for uid
-                a_save = Get(ctx, uid)
-                a_save_d = Deserialize(a_save)
-                a_count = a_save_d[8]
-                aa_count = a_count + 1
-                a_save_d[8] = aa_count
-                a_save_s = Serialize(a_save_d)
-                Put(ctx, uid, a_save_s)
+                ##a_save = Get(ctx, uid)
+                ##a_save_d = Deserialize(a_save)
+                ##a_count = a_save_d[8]
+                ##aa_count = a_count + 1
+                ##a_save_d[8] = aa_count
+                ##a_save_s = Serialize(a_save_d)
+                ##Put(ctx, uid, a_save_s)
+                updateAccCount(ctx, uid, 8, False)
 
                 # Count unfollowed += 1 for uFUid
-                b_save = Get(ctx, uFUid)
-                b_save_d = Deserialize(b_save)
-                b_count = b_save_d[7]
-                bb_count = b_count + 1
-                b_save_d[7] = bb_count
-                b_save_s = Serialize(b_save_d)
-                Put(ctx, uFUid, b_save_s)
+                ##b_save = Get(ctx, uFUid)
+                ##b_save_d = Deserialize(b_save)
+                ##b_count = b_save_d[7]
+                ##bb_count = b_count + 1
+                ##b_save_d[7] = bb_count
+                ##b_save_s = Serialize(b_save_d)
+                ##Put(ctx, uFUid, b_save_s)
+                updateAccCount(ctx, uFUid, 7, False)
 
                 # Mark index as unfollowed for uid 
                 PutThree(ctx,uid,".following.",index_a, "unfollowing")
@@ -179,6 +194,8 @@ def unFollow(ctx, uid, uFAddr, index_a, index_b):
 
                 #Set follow indicator = false
                 PutThree(ctx, uid, ".followcheck.", uFUid, False)
+
+                OnUnfollow(uid,uFUid)
                 return True
             Notify("Following and Follower indexes do not match")
             return False

@@ -7,7 +7,6 @@ Author: https://github.com/kokahunter
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness, Notify, Log
 from boa.interop.Neo.Storage import GetContext
-
 from send.Message import sendMessage, tweet, retweet, comment, like, unLike
 from account.AccountHelper import register, isRegistered, changeName, follow, unFollow
 
@@ -67,12 +66,28 @@ def Main(operation, args):
                 """
                 Notify("In operation changeName")
                 return changeName(ctx, uid, args[1])
-            elif operation == "tweet" and len(args) == 99:
+            elif operation == "tweet" and len(args) == 2:
+                """
+                Args required for follow:
+                    0 -> script hash of invoker
+                    1 -> content
+                """
                 Notify("In operation tweet")
-                return tweet(ctx, args)
-            elif operation == "retweet" and len(args) == 99:
+                if len(args[1]) <= 247 and len(args[1] > 0):
+                    return tweet(ctx,args[0],uid,args[1],'')
+                Notify("Tweet must have a length between 1 and 247")
+                return False
+            elif operation == "retweet" and len(args) == 3:
+                """
+                Args required for follow:
+                    0 -> script hash of invoker
+                    1 -> content
+                    2 -> storage key of tweet to be retweeted
+                """
                 Notify("In operation retweet")
-                return retweet(ctx, args)
+                if len(args[1]) <= 247:
+                    return retweet(ctx, args[0], uid, args[1], args[2])
+                Notify("Retweet comment must not be longer than 247")
             elif operation == "follow" and len(args) == 2:
                 """
                 Args required for follow:
@@ -98,9 +113,18 @@ def Main(operation, args):
             elif operation == "unlike" and len(args) == 99:
                 Notify("In operation unlike")
                 return unLike(ctx, args)  
-            elif operation == "comment" and len(args) == 99:
+            elif operation == "comment" and len(args) == 3:
+                """
+                Args required for commenting:
+                    0 -> script hash of invoker
+                    1 -> key of to-comment tweet
+                    2 -> comment text
+                """
                 Notify("In operation comment")
-                return comment(ctx, args)  
+                if len(args[2]) <= 247 and len(args[2] > 0):
+                    return comment(ctx, uid, args[1], args[2])
+                Notify("Comment length must be between 1 and 247")
+                return False
             elif operation == "batch" and len(args) == 99:
                 Notify("In operation batch")
                 # Pass off-chain serialized data, deserialize it on-chain and do operation for every item
