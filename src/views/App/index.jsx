@@ -377,7 +377,7 @@ class App extends React.Component {
     }
     invokeSendChat = (addr, message) => {
       const { invoke,getAddress } = this.props.nos;   
-      console.log("Invoke 'sendMessage'");
+      console.log("Invoke 'sendMhessage'");
       console.log("from: " + this.state.userAddress);
       console.log("to: " + addr);
       console.log("message: " + message);
