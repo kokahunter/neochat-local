@@ -11,7 +11,6 @@ import PropTypes from "prop-types";
 import App from "./views/App";
 
 import { StoreProvider, defaultStore } from "./store";
-import { Provider } from "./nos";
 
 
 const jss = createJss();

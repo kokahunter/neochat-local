@@ -1,9 +1,10 @@
 import React from "react";
 import injectSheet from "react-jss";
 import PropTypes from "prop-types";
-import { nosPropTypes } from "@nosplatform/api-functions/es6";
+//import { nosPropTypes } from "@nosplatform/api-functions/es6";
+import { react } from "@nosplatform/api-functions";
 import { injectStore } from "./../../store";
-import { injectNOS } from "../../nos";
+//import { injectNOS } from "../../nos";
 import { u, wallet } from "@cityofzion/neon-js";
 import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
@@ -24,58 +25,64 @@ import NosGrey from "./../../nos_grey.svg"
 import NeoLogo from "./../../neo.svg"
 
 import {unhexlify,hexlify} from 'binascii';
-//const { SubMenu } = Menu;
-//const { Header, Content, Footer, Sider } = Layout;
-//const Search = Input.Search;
 
+
+const { injectNOS, nosProps } = react.default;
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       recvCount: 0,
       sendCount: 0,
-      chatMessages: {
-      },
+      chatMessages: {},
       activeAddress: "welcome",
       userAddress: "",
-      menu: { },
+      menu: {},
       filteredMessages:[],
-      scriptHash: "8622cca4d552ebbb6a2e1c98473c2bc82aecad38"
+      scriptHash: "93ca2361022cc2d82808c5b9fdf7f47c95c03cd4"
     }
   }
   componentDidMount() {
     var promise = [];
     var temp;
-    promise.push(this.handleGetAddress());
-    Promise.all(promise).then(result => {
-      temp = result.toString();
-      this.setState({
-        userAddress: temp
-      })
-    });
+    this.props.nos.getAddress()
+      .then((address) => {
+        this.setState({
+          userAddress: address
+        })
+      });
   }
 
-  handleGetStorage = async (scriptHash, key) =>
-    await this.props.nos.getStorage(scriptHash, key);
-  handleInvoke = async (scriptHash, operation, args) =>
-      await this.props.nos.invoke(scriptHash, operation, args);
+  handleGetStorage = async (scriptHash, key, encodeInput, decodeOutput) =>
+    await this.props.nos.getStorage({ scriptHash, key, encodeInput, decodeOutput})
+      .catch((err) => alert(`Error: ${err.message}`));
 
-  handleTestInvoke = async (scriptHash, operation, args) =>
-    alert(JSON.stringify(await this.props.nos.testInvoke(scriptHash, operation, args)));
+  handleInvoke = (scriptHash, operation, args) =>
+    this.props.nos.invoke({ scriptHash, operation, args})
+      .then((txid) => alert(`Invoke txid: ${txid} `))
+      .catch((err) => alert(`Error: ${err.message}`));
   
-  handleGetAddress = async () => await this.props.nos.getAddress();
-
-  getRecvCount = async (scriptHash, addr) =>
-    this.setState({
-      recvCount: parseInt(await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive.latest"),16)
-    })
+  getRecvCount = async (scriptHash, addr) => {
+    await this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive.latest", true, false)
+      .then((data) => {
+        this.setState({
+          recvCount: parseInt(data)
+        });
+      })
+      .catch((err) => alert(`Error: ${err.message}`));
+  }
   getSendCount = async (scriptHash, addr) => {
-    this.setState({
-      sendCount: parseInt(await this.props.nos.getStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".send.latest"), 16)
-    })
+    await this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".send.latest", true, false)
+      .then((data) => {
+        this.setState({
+          sendCount: parseInt(data)
+        });
+      })
+      .catch((err) => alert(`Error: ${err.message}`));
   }
 
   fetchMessages = async (scriptHash, addr, recvCount, sendCount) => {
+    console.log("ASF" + recvCount);
     var count = 0;
     const { createChat } = this;
     //get received messages
@@ -89,11 +96,10 @@ class App extends React.Component {
     if (recvCount > 0){
       var promises = [];
       for (var i = 0; i< recvCount; i++){
-        promises.push(this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive." + unhexlify(u.int2hex(i+1))));
+        promises.push(this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive." + unhexlify(u.int2hex(i+1)), true, false));
       }
 
       Promise.all(promises).then(results => {
-        //TODO here the message needs to get deserialized so we get the send-from address, time and message
         var count = 0;
         results.forEach(function(entry){
           deserialized = [];
@@ -129,10 +135,9 @@ class App extends React.Component {
     if (sendCount > 0){
       var promises = [];
       for (var i = 0; i< sendCount; i++){
-        promises.push(this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".send." + unhexlify(u.int2hex(i+1))));
+        promises.push(this.handleGetStorage(scriptHash, unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))) + ".receive." + unhexlify(u.int2hex(i+1)), true, false));
       }
       Promise.all(promises).then(results => {
-        //TODO here the messaage needs to get deserialized so we get the send-to address, time and message
         var count = 0;
         results.forEach(function(entry){
           deserialized = [];
@@ -163,25 +168,6 @@ class App extends React.Component {
       });
     }
   }
-  deserializeStackItem = item => {
-    var offset = 0;
-    var type = parseInt(item[offset], 16);
-    offset += 1
-    switch(type){
-      case 0: //bytearray
-      case 1: //boolean
-      case 2: //Integer
-      case 64: //  InteropInterface
-      case 128: // array
-        //get array count
-      case 129: //struct
-      case 130: //map
-      default:
-        break;
-    }
-
-  }
-
   /**
  * Deserializes a serialized array that's passed as a hexstring
  * @param {hexstring} rawData
@@ -349,17 +335,10 @@ class App extends React.Component {
         console.log("Set sorted by time messages for " + clickKey + " :" + JSON.stringify(sortable));
         this.setState({filteredMessages: sortable});
       }
-      /*
-        this.getSendCount(this.state.userAddress);
-        this.getRecvCount(this.state.userAddress);
-        this.fetchMessages("83a3c98f5bd40f544f7905f3b5ae107e914f425e",this.state.userAddress,this.state.recvCount,this.state.sendCount);
-      */
       else if(clickKey == "reload"){
         this.setState({filteredMessages: []});
-        var promises = [];
-        promises.push(this.getSendCount(this.state.scriptHash,this.state.userAddress));
-        promises.push(this.getRecvCount(this.state.scriptHash,this.state.userAddress));
-        Promise.all(promises).then(()=>{
+
+        this.getMessageCount().then(() => {
           this.fetchMessages(this.state.scriptHash,this.state.userAddress,this.state.recvCount,this.state.sendCount);
         });
       }
@@ -367,6 +346,10 @@ class App extends React.Component {
         this.setState({filteredMessages: []});
       }
       this.setState({activeAddress: clickKey});
+    }
+    getMessageCount = async () => {
+      await this.getRecvCount(this.state.scriptHash, this.state.userAddress);
+      await this.getSendCount(this.state.scriptHash, this.state.userAddress);    
     }
     getDateTime = (unix_timestamp) => {
       var date = new Date(unix_timestamp*1000);
@@ -376,29 +359,21 @@ class App extends React.Component {
       return date.toLocaleDateString() + " " + (hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2));
     }
     invokeSendChat = (addr, message) => {
-      const { invoke,getAddress } = this.props.nos;   
-      console.log("Invoke 'sendMhessage'");
+      console.log("Invoke 'sendMessage'");
       console.log("from: " + this.state.userAddress);
       console.log("to: " + addr);
       console.log("message: " + message);
-      invoke(
+      this.handleInvoke(
         this.state.scriptHash,
         "sendMessage",
         [unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
         unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
         message,
-        message],          
+        message]       
       );
     }
   render() {
-    const { classes, store: {recvCount, sendCount} } = this.props;  
-    const scriptHashNeoChat = this.state.scriptHash;
-    //const addr = ba.unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress)));
-    const operation1 = u.str2hexstring("sendMessage");
-    //const a1 = ba.unhexlify(u.reverseHex(wallet.getScriptHashFromAddress("AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y")));
-    const a1= u.str2hexstring("AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y");
-    const a2 = u.str2hexstring("test");
-    const args2 = [a1,a1,a2,a2];
+    const { classes, store: {recvCount, sendCount}, nos } = this.props;  
     return (
         <Grid className={classes.neoChat}>
           <Row className={classes.neoChatBody}>
@@ -698,8 +673,7 @@ const App = ({ classes }) => (
 */
 App.propTypes = {
   classes: PropTypes.objectOf(PropTypes.any).isRequired,
-  nos: nosPropTypes.isRequired,
-  store: PropTypes.objectOf(PropTypes.any).isRequired
+  nos: nosProps.isRequired
 };
 
 export default injectStore(injectNOS(injectSheet(styles)(App)));

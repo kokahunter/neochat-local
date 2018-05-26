@@ -1,7 +1,8 @@
 import React from "react";
 import injectSheet from "react-jss";
-import { injectNOS } from "../../nos";
-import { injectStore } from "./../../store";
+//import { injectNOS } from "../../nos";
+import { react } from "@nosplatform/api-functions";
+//import { injectStore } from "./../../store";
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Grid from 'react-bootstrap/lib/Grid';
@@ -11,6 +12,8 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon'; 
 import Button from 'react-bootstrap/lib/Button'; 
+
+const { injectNOS, nosProps } = react.default;
 
 const styles = {
   chat: {
@@ -196,4 +199,4 @@ class ChatContent extends React.Component {
   }
 }
 
-export default injectStore(injectNOS(injectSheet(styles)(ChatContent)));
+export default injectNOS(injectSheet(styles)(ChatContent));

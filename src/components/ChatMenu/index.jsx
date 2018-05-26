@@ -1,13 +1,15 @@
 import React from "react";
 import injectSheet from "react-jss";
-import { injectNOS } from "../../nos";
-import { injectStore } from "./../../store";
+
+import { react } from "@nosplatform/api-functions";
+
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 
+const { injectNOS, nosProps } = react.default;
 const styles = {
   button: {
     margin: "16px",
@@ -31,12 +33,13 @@ class ChatMenu extends React.Component {
                 stacked 
                 onSelect={onClick} 
                 className={classes.noMargin}
-                activeKey={this.props.activeAddress}>
+                activeKey={this.props.activeAddress}
+                key={this.props.activeAddress}>
               {
                 Object.keys(this.props.menu).map(function(key){
                   const item = this.props.menu[key];
                   return (
-                      <NavItem eventKey={item} className={classes.siderChatBody} href="#">{item}</NavItem>
+                      <NavItem eventKey={item} key={item} className={classes.siderChatBody} href="#">{item}</NavItem>
                   )}.bind(this))
               }
               </Nav>
@@ -45,4 +48,4 @@ class ChatMenu extends React.Component {
   }
 }
 
-export default injectStore(injectNOS(ChatMenu));
+export default injectNOS(ChatMenu);
