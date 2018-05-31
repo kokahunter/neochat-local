@@ -18,7 +18,6 @@ import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
 import NosGrey from "./../../nos_grey.svg";
 import NeoLogo from "./../../neo.svg";
-import { injectStore } from "./../../store";
 
 const { injectNOS, nosProps } = react.default;
 class App extends React.Component {
@@ -709,6 +708,6 @@ App.propTypes = {
   nos: nosProps.isRequired
 };
 
-export default injectStore(injectNOS(injectSheet(styles)(App)));
+export default injectNOS(injectSheet(styles)(App));
 
 // export default injectStore((App));
