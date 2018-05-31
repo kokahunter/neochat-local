@@ -11,13 +11,10 @@ import PropTypes from "prop-types";
 import App from "./views/App";
 
 import { StoreProvider, defaultStore } from "./store";
-import { Provider } from "./nos";
-
 
 const jss = createJss();
 
 jss.use(vendorPrefixer(), camelCase(), globalStyles(), nested());
-
 
 class NeoChat extends React.Component {
   static propTypes = {
@@ -25,12 +22,12 @@ class NeoChat extends React.Component {
   };
 
   /* eslint-disable react/no-unused-state */
-  state = Object.assign(defaultStore, {     
+  state = Object.assign(defaultStore, {
     setRecvCount: recvCount => {
-      recvCount: Object.assign(this.state.recvCount, recvCount)
-    },  
+      Object.assign(this.state.recvCount, recvCount);
+    },
     setSendCount: sendCount => {
-      recvCount: Object.assign(this.state.sendCount, sendCount)
+      Object.assign(this.state.sendCount, sendCount);
     }
   });
   /* eslint-enable */
@@ -40,7 +37,6 @@ class NeoChat extends React.Component {
     return <StoreProvider value={this.state}>{children}</StoreProvider>;
   }
 }
-
 
 ReactDOM.render(
   <NeoChat>

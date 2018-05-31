@@ -1,48 +1,44 @@
 import React from "react";
-import injectSheet from "react-jss";
-import { injectNOS } from "../../nos";
-import { injectStore } from "./../../store";
-import Row from 'react-bootstrap/lib/Row';
-import Col from 'react-bootstrap/lib/Col';
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
-import Navbar from 'react-bootstrap/lib/Navbar';
+import { react } from "@nosplatform/api-functions";
+import PropTypes from "prop-types";
+import Nav from "react-bootstrap/lib/Nav";
+import NavItem from "react-bootstrap/lib/NavItem";
 
-const styles = {
-  button: {
-    margin: "16px",
-    fontSize: "14px"
-  }
-};
-
+const { injectNOS } = react.default;
 class ChatMenu extends React.Component {
-  /*handleClick = (e) => {
-    console.log(e.key);
-  }*/
   clickBack = e => {
     alert(console.log(e));
-  }
+  };
   render() {
-    const { classes, onClick } = this.props; 
+    const { classes, onClick } = this.props;
     return (
       <React.Fragment>
-              <Nav 
-                bsStyle="pills" 
-                stacked 
-                onSelect={onClick} 
-                className={classes.noMargin}
-                activeKey={this.props.activeAddress}>
-              {
-                Object.keys(this.props.menu).map(function(key){
-                  const item = this.props.menu[key];
-                  return (
-                      <NavItem eventKey={item} className={classes.siderChatBody} href="#">{item}</NavItem>
-                  )}.bind(this))
-              }
-              </Nav>
+        <Nav
+          bsStyle="pills"
+          stacked
+          onSelect={onClick}
+          className={classes.noMargin}
+          activeKey={this.props.activeAddress}
+          key={this.props.activeAddress}
+        >
+          {Object.keys(this.props.menu).map(key => {
+            const item = this.props.menu[key];
+            return (
+              <NavItem eventKey={item} key={item} className={classes.siderChatBody} href="#">
+                {item}
+              </NavItem>
+            );
+          })}
+        </Nav>
       </React.Fragment>
     );
   }
 }
+ChatMenu.propTypes = {
+  classes: PropTypes.objectOf(PropTypes.any).isRequired,
+  menu: PropTypes.objectOf(PropTypes.any).isRequired,
+  activeAddress: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+};
 
-export default injectStore(injectNOS(ChatMenu));
+export default injectNOS(ChatMenu);
