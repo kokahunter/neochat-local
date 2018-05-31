@@ -40,6 +40,7 @@
     "jss": "^9.0.0",
     "jss-camel-case": "^6.1.0",
     "jss-global": "^3.0.0",
+    "jss-nested": "^6.0.1",
     "jss-vendor-prefixer": "8.0.0",
     "mobx": "^4.3.0",
     "mobx-react": "^5.1.2",
