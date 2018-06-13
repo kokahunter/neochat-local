@@ -17,6 +17,7 @@ def register(ctx, args):
         0 -> script hash of invoker
         1 -> unique user id
         2 -> display name
+        3 -> public key
     Account storage uid => array[]:
         0 -> script hash of invoker
         1 -> uid
@@ -27,6 +28,7 @@ def register(ctx, args):
         6 -> count following
         7 -> count unfollowed
         8 -> count unfollowing
+        9 -> public key
     """
     addr = args[0]
     uid = args[1]
@@ -38,7 +40,7 @@ def register(ctx, args):
             Put(ctx, addr, uid)
             name = args[2]
             time = GetTime()
-            save = [addr, uid, name, time, 0, 0, 0, 0, 0]
+            save = [addr, uid, name, time, 0, 0, 0, 0, 0, args[3]]
             save_s = Serialize(save)
             # register the uid with user data
             Put(ctx, args[1], save_s)

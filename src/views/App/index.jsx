@@ -18,6 +18,7 @@ import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
 import NosGrey from "./../../nos_grey.svg";
 import NeoLogo from "./../../neo.svg";
+// import { crypto, test } from "./../../crypto";
 
 const { injectNOS, nosProps } = react.default;
 class App extends React.Component {
@@ -29,16 +30,22 @@ class App extends React.Component {
       chatMessages: {},
       activeAddress: "welcome",
       userAddress: "",
+      userPkey: "",
       menu: {},
       filteredMessages: [],
-      scriptHash: "93ca2361022cc2d82808c5b9fdf7f47c95c03cd4"
+      scriptHash: "53f9f38da61417ef1781f82640059362bfffef85",
+      registered: false,
+      userAccount: {}
     };
   }
   componentDidMount() {
     this.props.nos.getAddress().then(address => {
+      this.state.userAddress = address;
       this.setState({
-        userAddress: address
+        userAddress: this.state.userAddress,
+        userPkey: "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a"
       });
+      this.getUserAccount(this.state.scriptHash, this.state.userAddress);
     });
   }
   getDateTime = unixTimestamp => {
@@ -47,6 +54,52 @@ class App extends React.Component {
     const minutes = `0${date.getMinutes()}`;
     const seconds = `0${date.getSeconds()}`;
     return `${date.toLocaleDateString()} ${hours}:${minutes.substr(-2)}:${seconds.substr(-2)}`;
+  };
+  getUserData = async (scriptHash, uuid) => {
+    console.log(uuid);
+    await this.handleGetStorage(scriptHash, uuid, false, false)
+      .then(data => {
+        if (data != null) {
+          const tmp = this.deserialize(data, "account");
+          this.state.userAccount = {
+            key: tmp[0],
+            uuid: tmp[1],
+            name: tmp[2],
+            time: this.getDateTime(tmp[3]),
+            tweets: tmp[4],
+            followers: tmp[5],
+            following: tmp[6],
+            unfollowed: tmp[7],
+            unfollowing: tmp[8],
+            pkey: tmp[9]
+          };
+          this.state.registered = true;
+          this.setState({
+            userAccount: this.state.userAccount,
+            registered: true
+          });
+          console.log(JSON.stringify(this.state.userAccount));
+        }
+      })
+      .catch(err => alert(`getUserData Error: ${err.message}`));
+  };
+  getUserAccount = async (scriptHash, addr) => {
+    await this.handleGetStorage(
+      scriptHash,
+      unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
+      true,
+      false
+    )
+      .then(data => {
+        if (data === null) {
+          this.setState({
+            registered: false
+          });
+        } else {
+          this.getUserData(scriptHash, data);
+        }
+      })
+      .catch(err => alert(`getUserAccount Error: ${err.message}`));
   };
   getMessageCount = async () => {
     await this.getRecvCount(this.state.scriptHash, this.state.userAddress);
@@ -172,7 +225,7 @@ class App extends React.Component {
    * Deserializes a serialized array that's passed as a hexstring
    * @param {hexstring} rawData
    */
-  deserialize = rawData => {
+  deserialize = (rawData, realm) => {
     // Split into bytes of 2 characters
     const rawSplitted = rawData.match(/.{2}/g);
     // console.log(rawSplitted);
@@ -251,17 +304,27 @@ class App extends React.Component {
       // console.log(data);
       if (itemType === 2) {
         // console.log("data: " + parseInt(u.reverseHex(data),16));
-        data = u.reverseHex(data);
+        if (realm === "message") {
+          data = u.reverseHex(data);
+        } else {
+          data = parseInt(u.reverseHex(data), 16);
+        }
         // console.log ("TIME" + data);
       } else if (itemType === 0) {
         // [unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
         // data = hexlify(u.reverseHex(wallet.getAddressFromScriptHash))
-        if (i === 0) {
-          // console.log(u.hexstring2str(data));
-          data = u.hexstring2str(data);
-        } else {
+        if (realm === "message") {
+          if (i === 0) {
+            // console.log(u.hexstring2str(data));
+            data = u.hexstring2str(data);
+          } else {
+            data = wallet.getAddressFromScriptHash(u.reverseHex(data));
+            // console.log(wallet.getAddressFromScriptHash(u.reverseHex(data)));
+          }
+        } else if (i === 0) {
           data = wallet.getAddressFromScriptHash(u.reverseHex(data));
-          // console.log(wallet.getAddressFromScriptHash(u.reverseHex(data)));
+        } else {
+          data = u.hexstring2str(data);
         }
       }
       rawArray.push(data);
@@ -305,7 +368,7 @@ class App extends React.Component {
         let count = 0;
         results.forEach(entry => {
           deserialized = [];
-          deserialized = deserialize(entry);
+          deserialized = deserialize(entry, "message");
           const msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
@@ -351,7 +414,7 @@ class App extends React.Component {
         results.forEach(entry => {
           deserialized = [];
 
-          deserialized = deserialize(entry);
+          deserialized = deserialize(entry, "message");
           const msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
@@ -385,7 +448,21 @@ class App extends React.Component {
   handleGetStorage = async (scriptHash, key, encodeInput, decodeOutput) =>
     this.props.nos
       .getStorage({ scriptHash, key, encodeInput, decodeOutput })
-      .catch(err => alert(`Error: ${err.message}`));
+      .catch(err => alert(`Storage Error: ${err.message}`));
+
+  invokeRegister = (uuid, name) => {
+    console.log("Invoke 'register'");
+    console.log(`Address: ${this.state.userAddress}`);
+    console.log(`uuid: ${uuid}`);
+    console.log(`name: ${name}`);
+    console.log(`pkey: ${this.state.userPkey}`);
+    this.handleInvoke(this.state.scriptHash, "register", [
+      unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
+      uuid,
+      name,
+      this.state.userPkey
+    ]);
+  };
 
   invokeSendChat = (addr, message) => {
     console.log("Invoke 'sendMessage'");
@@ -434,6 +511,15 @@ class App extends React.Component {
                     <MenuItem eventKey="new" onSelect={this.handleClick}>
                       New message
                     </MenuItem>
+                    {this.state.registered ? (
+                      <MenuItem eventKey="account" onSelect={this.handleClick}>
+                        Account
+                      </MenuItem>
+                    ) : (
+                      <MenuItem eventKey="register" onSelect={this.handleClick}>
+                        Register
+                      </MenuItem>
+                    )}
                     <MenuItem divider />
                     <MenuItem eventKey="welcome" onSelect={this.handleClick}>
                       About
@@ -468,8 +554,10 @@ class App extends React.Component {
             <ChatContent
               activeAddress={this.state.activeAddress}
               onInvokeSend={this.invokeSendChat}
+              onInvokeRegister={this.invokeRegister}
               chatMessages={this.state.filteredMessages}
               classes={classes}
+              userAccount={this.state.userAccount}
             />
           </Col>
         </Row>

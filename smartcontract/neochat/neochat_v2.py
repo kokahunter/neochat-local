@@ -50,7 +50,14 @@ def Main(operation, args):
         if operation == "sendMessage" and len(args) == 4:
             Notify("In operation sendMessage")
             return sendMessage(ctx, args)
-        elif operation == "register" and len(args) == 3:
+        elif operation == "register" and len(args) == 4:
+            """
+            Args required for register:
+                0 -> script hash of invoker
+                1 -> unique user id
+                2 -> display name
+                3 -> public key
+            """
             Notify("In operation register")
             return register(ctx, args)
         uid = isRegistered(ctx, args[0])

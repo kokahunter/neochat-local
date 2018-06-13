@@ -32,11 +32,12 @@
   },
   "homepage": "https://github.com/nos/dapp-starter-kit#readme",
   "dependencies": {
-    "@cityofzion/neon-js": "3.8.0",
+    "@cityofzion/neon-js": "3.9.0",
     "@nosplatform/api-functions": "0.2.2",
     "antd": "^3.5.3",
     "babel-polyfill": "6.26.0",
     "binascii": "0.0.2",
+    "crypto-browserify": "^3.12.0",
     "jss": "^9.0.0",
     "jss-camel-case": "^6.1.0",
     "jss-global": "^3.0.0",

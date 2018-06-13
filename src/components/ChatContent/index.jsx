@@ -24,10 +24,14 @@ class ChatContent extends React.Component {
     this.state = {
       inputAddress: "",
       message: "",
-      count: 0
+      count: 0,
+      uuid: "",
+      name: ""
     };
     this.handleChangeAddr = this.handleChangeAddr.bind(this);
     this.handleChangeMsg = this.handleChangeMsg.bind(this);
+    this.handleChangeName = this.handleChangeName.bind(this);
+    this.handleChangeUUID = this.handleChangeUUID.bind(this);
   }
   handleChangeAddr(event) {
     this.setState({ inputAddress: event.target.value });
@@ -38,6 +42,14 @@ class ChatContent extends React.Component {
       message: event.target.value,
       count: this.state.count
     });
+  }
+  handleChangeUUID(event) {
+    this.state.uuid = event.target.value;
+    this.setState({ uuid: this.state.uuid });
+  }
+  handleChangeName(event) {
+    this.state.name = event.target.value;
+    this.setState({ name: this.state.name });
   }
   render() {
     const { classes } = this.props;
@@ -140,6 +152,85 @@ class ChatContent extends React.Component {
           </Row>
         </React.Fragment>
       );
+    } else if (this.props.activeAddress === "account") {
+      return (
+        <React.Fragment>
+          <Row className={classes.chatHeader}>
+            <Col className={classes.chatHeaderInner} sm={12}>
+              <span className={classes.headerText2}>Account information</span>
+            </Col>
+          </Row>
+          <Row className={classes.chatMessages}>
+            <Col sm={12} className={classes.chatMessagesBody}>
+              {Object.keys(this.props.userAccount).map(key => (
+                <Row key={key} className={classes.message}>
+                  <Col className={classes.messageReceive} sm={2}>
+                    <span>{key}</span>
+                  </Col>
+                  <Col className={classes.messageReceive} sm={10}>
+                    <span>{this.props.userAccount[key]}</span>
+                  </Col>
+                </Row>
+              ))}
+            </Col>
+          </Row>
+          <Row className={classes.chatReply}>
+            <Col className={classes.welcomeFooter} sm={12} />
+          </Row>
+        </React.Fragment>
+      );
+    } else if (this.props.activeAddress === "register") {
+      return (
+        <React.Fragment>
+          <Row className={classes.chatHeader}>
+            <Col className={classes.chatHeaderInner} sm={12}>
+              <span className={classes.headerText2}>Register</span>
+            </Col>
+          </Row>
+          <Row className={classes.chatMessages}>
+            <Col sm={12} className={classes.chatMessagesBody}>
+              <Row key="uuid" className={classes.message}>
+                <Col className={classes.messageReceive} sm={4}>
+                  <span>Username</span>
+                </Col>
+                <Col className={classes.messageReceive} sm={8}>
+                  <FormControl
+                    type="text"
+                    value={this.state.uuid}
+                    onChange={this.handleChangeUUID}
+                    key="uuid"
+                  />
+                </Col>
+              </Row>
+              <Row key="name" className={classes.message}>
+                <Col className={classes.messageReceive} sm={4}>
+                  <span>Display name</span>
+                </Col>
+                <Col className={classes.messageReceive} sm={8}>
+                  <FormControl
+                    type="text"
+                    value={this.state.name}
+                    onChange={this.handleChangeName}
+                    key="name"
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row className={classes.chatReply}>
+            <Col className={classes.welcomeFooter} sm={12}>
+              <span>Send registration </span>
+              <Button
+                onClick={() => {
+                  this.props.onInvokeRegister(this.state.uuid, this.state.name);
+                }}
+              >
+                <Glyphicon glyph="send" />
+              </Button>
+            </Col>
+          </Row>
+        </React.Fragment>
+      );
     }
     return (
       <React.Fragment>
@@ -216,6 +307,8 @@ ChatContent.propTypes = {
   classes: PropTypes.objectOf(PropTypes.any).isRequired,
   activeAddress: PropTypes.string.isRequired,
   onInvokeSend: PropTypes.func.isRequired,
-  chatMessages: PropTypes.array.isRequired
+  chatMessages: PropTypes.array.isRequired,
+  onInvokeRegister: PropTypes.func.isRequired,
+  userAccount: PropTypes.object.isRequired
 };
 export default injectNOS(injectSheet(styles)(ChatContent));
