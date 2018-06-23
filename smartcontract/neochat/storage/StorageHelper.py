@@ -77,3 +77,11 @@ def updateAccCount(ctx, uid, index, noCount):
         return a_save_d
     else:
         return aa_count
+
+def ValidateIPFS(ipfs):
+    if ipfs == 0:
+        return True
+    elif ipfs == 1:
+        return True
+    else:
+        return False

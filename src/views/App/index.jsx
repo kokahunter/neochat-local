@@ -33,7 +33,7 @@ class App extends React.Component {
       userPkey: "",
       menu: {},
       filteredMessages: [],
-      scriptHash: "53f9f38da61417ef1781f82640059362bfffef85",
+      scriptHash: "c1b9ae6ef5a774bc82d980bb318b9bccaa5c2f14",
       registered: false,
       userAccount: {}
     };
@@ -246,7 +246,8 @@ class App extends React.Component {
     // console.log("arrayLen" + arrayLen);
     let offset = 2;
     const rawArray = [];
-
+    console.log(rawSplitted);
+    // console.log(arrayLen);
     for (let i = 0; i < arrayLen; i += 1) {
       // get item type
       const itemType = parseInt(rawSplitted[offset], 16);
@@ -255,6 +256,7 @@ class App extends React.Component {
 
       // get item length
       let itemLength = parseInt(rawSplitted[offset], 16);
+      // console.log("itemLength" + itemLength)
       // serialize: https://github.com/neo-project/neo-vm/blob/master/src/neo-vm/Helper.cs#L41-L64
       offset += 1;
       if (itemLength === 253) {
@@ -301,6 +303,9 @@ class App extends React.Component {
       // console.log("itemLength" + itemLength)
       // console.log(offset);
       let data = this.concatBytes(rawSplitted, offset, itemLength + offset);
+      // console.log(i);
+      // console.log(itemType);
+      // console.log(data);
       // console.log(data);
       if (itemType === 2) {
         // console.log("data: " + parseInt(u.reverseHex(data),16));
@@ -317,9 +322,10 @@ class App extends React.Component {
           if (i === 0) {
             // console.log(u.hexstring2str(data));
             data = u.hexstring2str(data);
+          } else if (i === 3) {
+            data = parseInt(data, 16) === 1;
           } else {
             data = wallet.getAddressFromScriptHash(u.reverseHex(data));
-            // console.log(wallet.getAddressFromScriptHash(u.reverseHex(data)));
           }
         } else if (i === 0) {
           data = wallet.getAddressFromScriptHash(u.reverseHex(data));
@@ -372,6 +378,7 @@ class App extends React.Component {
           const msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
+          const ipfsT = deserialized[3];
           console.log(`MESSAGE ${msgD}`);
           console.log(`TIME ${timeD}`);
           console.log(`ADDRESS ${addrD}`);
@@ -383,7 +390,8 @@ class App extends React.Component {
             key: `receive${count}`,
             message: msgD,
             time: timeD,
-            direction: "receive"
+            direction: "receive",
+            ipfs: ipfsT
           };
           createChat(addrD);
           count += 1;
@@ -394,7 +402,7 @@ class App extends React.Component {
       });
     }
     // get send messages
-    console.log(`Getting ${sendCount} sent messages`);
+    // console.log(`Getting ${sendCount} sent messages`);
     if (sendCount > 0) {
       promises = [];
       for (let i = 0; i < sendCount; i += 1) {
@@ -418,17 +426,17 @@ class App extends React.Component {
           const msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
-
+          const ipfsT = deserialized[3];
           if (tmp.send[addrD] === undefined) {
             count = 0;
-            console.log("here");
             tmp.send[addrD] = [{}];
           }
           tmp.send[addrD][count] = {
             key: `send${count}`,
             message: msgD,
             time: timeD,
-            direction: "send"
+            direction: "send",
+            ipfs: ipfsT
           };
           createChat(addrD);
           count += 1;
@@ -473,7 +481,7 @@ class App extends React.Component {
       unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
       unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
       message,
-      message
+      1 /* IPFS parameter always false, until nOS storage or other storage will be used */
     ]);
   };
   render() {

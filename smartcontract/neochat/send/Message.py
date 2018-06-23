@@ -3,7 +3,7 @@ from boa.builtins import concat, list
 from boa.interop.Neo.Storage import Get
 from boa.interop.Neo.Action import RegisterAction
 
-from storage.StorageHelper import IncrementThree, PutThree, IncrementOne, PutTwo, updateTweetCount, updateAccCount, GetThree
+from storage.StorageHelper import IncrementThree, PutThree, IncrementOne, PutTwo, updateTweetCount, updateAccCount, GetThree, ValidateIPFS
 
 # events
 OnTweet = RegisterAction('tweet', 'globalid', 'uid', 'tweetkey')
@@ -37,6 +37,9 @@ def sendMessage(ctx, sender, receiver, message, ipfs):
     Log('time')
     Notify(concat('time',time))
     
+    if not ValidateIPFS(ipfs):
+        return False
+
     # Add message for sender
     addMessage(ctx,sender,'.send.',message,receiver,time, ipfs)
     # Add message for recipient
