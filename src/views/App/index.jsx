@@ -481,7 +481,7 @@ class App extends React.Component {
       unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
       unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
       message,
-      1 /* IPFS parameter always false, until nOS storage or other storage will be used */
+      0 /* IPFS parameter always false, until nOS storage or other storage will be used */
     ]);
   };
   render() {
