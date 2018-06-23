@@ -3,7 +3,7 @@ from boa.builtins import concat, list
 from boa.interop.Neo.Storage import Get
 from boa.interop.Neo.Action import RegisterAction
 
-from storage.StorageHelper import IncrementThree, PutThree, IncrementOne, PutTwo, updateTweetCount, updateAccCount, GetThree
+from storage.StorageHelper import IncrementThree, PutThree, IncrementOne, PutTwo, updateTweetCount, updateAccCount, GetThree, ValidateIPFS
 
 # events
 OnTweet = RegisterAction('tweet', 'globalid', 'uid', 'tweetkey')
@@ -11,41 +11,44 @@ OnRetweet = RegisterAction('retweet', 'uid', 'retweetkey')
 OnComment = RegisterAction('comment', 'uid', 'tweetkey')
 OnLike = RegisterAction('like', 'uid', 'tweetkey')
 
-def sendMessage(ctx, args):
-    # Args
-    sender = args[0]
-    receiver = args[1]
-    # messageA: for "encrypt-to-self". encrypted with public key from A (sender).
-    messageA = args[2]
-    # messageB: encrypted with public key from B (receiver).
-    messageB = args[3]
+def sendMessage(ctx, sender, receiver, message, ipfs):
+    """
+    Send message
+    
+    Args:
+        sender -> sender address
+        receiver -> receiver address
+        message -> Contains the message or the ipfs hash
+        ipfs -> Boolean if ipfs is used
+    
+    A = scripthash of sender
+    storage A.send.{index}
+        stores the sent message from A for respective index
+    storage A.send.latest
+        stores the index of the last message sent from A
+    
+    Receiver B = scripthash of receiver
+    storage B.receive.{index}
+        stores the received message for the recipient B for the respective index
+    storage B.receive.latest
+        stores the index of the last message received for B
+    """
     time = GetTime()
     Log('time')
     Notify(concat('time',time))
-    """
-        Sender A = scripthash of sender
-        storage A.send.{index}
-            stores the sent message from A for respective index
-        storage A.send.latest
-            stores the index of the last message sent from A
-        
-        Receiver B = scripthash of receiver
-        storage B.receive.{index}
-            stores the received message for the recipient B for the respective index
-        storage B.receive.latest
-            stores the index of the last message received for B
-
-    """
     
-    # Add message "envrypt-to-self"
-    addMessage(ctx,sender,'.send.',messageA,receiver,time)
+    if not ValidateIPFS(ipfs):
+        return False
+
+    # Add message for sender
+    addMessage(ctx,sender,'.send.',message,receiver,time, ipfs)
     # Add message for recipient
-    addMessage(ctx,receiver,'.receive.',messageB,sender,time)
+    addMessage(ctx,receiver,'.receive.',message,sender,time, ipfs)
     return True
 
-def addMessage(ctx,party,direction,message,partySecond,time):
+def addMessage(ctx,party,direction,message,partySecond,time, ipfs):
     newLastIndex = IncrementThree(ctx,party,direction,"latest")
-    messageData = [message,time,partySecond]
+    messageData = [message,time,partySecond, ipfs]
     messageTemp = Serialize(messageData)
     PutThree(ctx,party,direction,newLastIndex,messageTemp)
     return True
