@@ -42,12 +42,20 @@ class App extends React.Component {
     this.props.nos.getAddress().then(address => {
       this.state.userAddress = address;
       this.setState({
-        userAddress: this.state.userAddress,
-        userPkey: "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a"
+        userAddress: this.state.userAddress
+      });
+      this.getUserPK().then(data => {
+        this.state.userPkey = data;
+        this.setState({
+          userPkey: this.state.userPkey
+        });
       });
       this.getUserAccount(this.state.scriptHash, this.state.userAddress);
     });
   }
+
+  getUserPK = async () => "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a";
+
   getDateTime = unixTimestamp => {
     const date = new Date(unixTimestamp * 1000);
     const hours = date.getHours();
@@ -133,7 +141,25 @@ class App extends React.Component {
       })
       .catch(err => alert(`Error: ${err.message}`));
   };
-
+  getReceiverPK = async uuid => {
+    console.log(`uuid ${uuid}`);
+    const pk = await this.handleGetStorage(this.state.scriptHash, uuid, false, false);
+    const tmp = this.deserialize(pk, "account");
+    return tmp[9];
+  };
+  verifyReceiver = async addr => {
+    const uuid = await this.handleGetStorage(
+      this.state.scriptHash,
+      unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
+      true,
+      false
+    );
+    if (uuid === null) {
+      return false;
+    }
+    const pk = await this.getReceiverPK(uuid);
+    return pk;
+  };
   concatBytes = (source, start, length) => {
     let temp = "";
     for (let i = start; i < length; i += 1) temp += source[i];
@@ -246,7 +272,6 @@ class App extends React.Component {
     // console.log("arrayLen" + arrayLen);
     let offset = 2;
     const rawArray = [];
-    console.log(rawSplitted);
     // console.log(arrayLen);
     for (let i = 0; i < arrayLen; i += 1) {
       // get item type
@@ -472,17 +497,23 @@ class App extends React.Component {
     ]);
   };
 
-  invokeSendChat = (addr, message) => {
+  invokeSendChat = (addr, message, pk) => {
     console.log("Invoke 'sendMessage'");
     console.log(`from: ${this.state.userAddress}`);
     console.log(`to: ${addr}`);
     console.log(`message: ${message}`);
-    this.handleInvoke(this.state.scriptHash, "sendMessage", [
-      unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
-      unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
-      message,
-      0 /* IPFS parameter always false, until nOS storage or other storage will be used */
-    ]);
+    if (wallet.isAddress(addr)) {
+      // TODO validate PK
+      // TODO encryption
+      this.handleInvoke(this.state.scriptHash, "sendMessage", [
+        unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
+        unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
+        message,
+        0 /* IPFS parameter always false, until nOS storage or other storage will be used */
+      ]);
+    } else {
+      alert("Not a valid address: " + addr);
+    }
   };
   render() {
     const { classes } = this.props;
@@ -566,6 +597,7 @@ class App extends React.Component {
               chatMessages={this.state.filteredMessages}
               classes={classes}
               userAccount={this.state.userAccount}
+              verifyReceiver={this.verifyReceiver}
             />
           </Col>
         </Row>

@@ -32,7 +32,28 @@ class ChatContent extends React.Component {
     this.handleChangeMsg = this.handleChangeMsg.bind(this);
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeUUID = this.handleChangeUUID.bind(this);
+    this.handleSendMessage = this.handleSendMessage.bind(this);
   }
+  handleSendMessage = async (addr, message) => {
+    const pk = await this.props.verifyReceiver(addr);
+    let send = false;
+    // if pk = false then receiver is not registered. Message cannot be encrypted
+    console.log(`pk ${pk}`);
+    if (pk === false) {
+      if (window.confirm("Receiver is not registered. Message will not be encrypted. Continue?")) {
+        send = true;
+      }
+    } else {
+      send = true;
+    }
+    if (send) {
+      this.props.onInvokeSend(addr, message, pk);
+      this.setState({
+        message: "",
+        count: 0
+      });
+    }
+  };
   handleChangeAddr(event) {
     this.setState({ inputAddress: event.target.value });
   }
@@ -93,11 +114,7 @@ class ChatContent extends React.Component {
                   <InputGroup.Button>
                     <Button
                       onClick={() => {
-                        this.props.onInvokeSend(this.state.inputAddress, this.state.message);
-                        this.setState({
-                          message: "",
-                          count: 0
-                        });
+                        this.handleSendMessage(this.state.inputAddress, this.state.message);
                       }}
                     >
                       <Glyphicon glyph="send" />
@@ -285,11 +302,7 @@ class ChatContent extends React.Component {
                 <InputGroup.Button>
                   <Button
                     onClick={() => {
-                      this.props.onInvokeSend(this.props.activeAddress, this.state.message);
-                      this.setState({
-                        message: "",
-                        count: 0
-                      });
+                      this.handleSendMessage(this.props.activeAddress, this.state.message);
                     }}
                   >
                     <Glyphicon glyph="send" />
@@ -309,6 +322,7 @@ ChatContent.propTypes = {
   onInvokeSend: PropTypes.func.isRequired,
   chatMessages: PropTypes.array.isRequired,
   onInvokeRegister: PropTypes.func.isRequired,
-  userAccount: PropTypes.object.isRequired
+  userAccount: PropTypes.object.isRequired,
+  verifyReceiver: PropTypes.func.isRequired
 };
 export default injectNOS(injectSheet(styles)(ChatContent));
