@@ -11,7 +11,7 @@ OnRetweet = RegisterAction('retweet', 'uid', 'retweetkey')
 OnComment = RegisterAction('comment', 'uid', 'tweetkey')
 OnLike = RegisterAction('like', 'uid', 'tweetkey')
 
-def sendMessage(ctx, sender, receiver, message, ipfs):
+def sendMessage(ctx, sender, receiver, message, ipfs, encrypted):
     """
     Send message
     
@@ -20,6 +20,7 @@ def sendMessage(ctx, sender, receiver, message, ipfs):
         receiver -> receiver address
         message -> Contains the message or the ipfs hash
         ipfs -> Boolean if ipfs is used
+        encrypted -> Boolean if message is encrypted
     
     A = scripthash of sender
     storage A.send.{index}
@@ -40,15 +41,15 @@ def sendMessage(ctx, sender, receiver, message, ipfs):
     if not ValidateIPFS(ipfs):
         return False
 
-    # Add message for sender
-    addMessage(ctx,sender,'.send.',message,receiver,time, ipfs)
-    # Add message for recipient
-    addMessage(ctx,receiver,'.receive.',message,sender,time, ipfs)
+    # Add message header  for sender
+    addMessage(ctx,sender,'.send.',message,receiver,time, ipfs, encrypted)
+    # Add message header for recipient
+    addMessage(ctx,receiver,'.receive.',message,sender,time, ipfs, encrypted)
     return True
 
-def addMessage(ctx,party,direction,message,partySecond,time, ipfs):
+def addMessage(ctx,party,direction,message,partySecond,time, ipfs, encrypted):
     newLastIndex = IncrementThree(ctx,party,direction,"latest")
-    messageData = [message,time,partySecond, ipfs]
+    messageData = [message,time,partySecond, ipfs, encrypted]
     messageTemp = Serialize(messageData)
     PutThree(ctx,party,direction,newLastIndex,messageTemp)
     return True

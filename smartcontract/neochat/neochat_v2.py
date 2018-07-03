@@ -47,17 +47,18 @@ def Main(operation, args):
             query operations    
         """
 
-        if operation == "sendMessage" and len(args) == 4:
+        if operation == "sendMessage" and len(args) == 5:
             """
             Args required for sendMessage:
                 0 -> sender script hash
                 1 -> receiver address
                 2 -> message
-                3 -> IPFS boolean
+                3 -> IPFS boolean (int)
+                4 -> encrypted boolean (int)
             """
             Notify("In operation sendMessage")
             if len(args[2]) <= 247 and len(args[2] > 0):
-                return sendMessage(ctx, args[0], args[1], args[2], args[3])
+                return sendMessage(ctx, args[0], args[1], args[2], args[3], args[4])
             Notify("Message must have a length between 1 and 247")
             #todo: check ipfs hash length
         elif operation == "register" and len(args) == 4:
