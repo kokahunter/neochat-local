@@ -33,7 +33,7 @@ class App extends React.Component {
       userPkey: "",
       menu: {},
       filteredMessages: [],
-      scriptHash: "c1b9ae6ef5a774bc82d980bb318b9bccaa5c2f14",
+      scriptHash: "845e6c66730365f8a86030e37e3ba3baed3fba8e",
       registered: false,
       userAccount: {}
     };
@@ -497,7 +497,7 @@ class App extends React.Component {
     ]);
   };
 
-  invokeSendChat = (addr, message, pk) => {
+  invokeSendChat = (addr, message, pk, encrypted) => {
     console.log("Invoke 'sendMessage'");
     console.log(`from: ${this.state.userAddress}`);
     console.log(`to: ${addr}`);
@@ -509,7 +509,8 @@ class App extends React.Component {
         unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
         unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
         message,
-        0 /* IPFS parameter always false, until nOS storage or other storage will be used */
+        0 /* IPFS parameter always false, until nOS storage or other storage will be used */,
+        encrypted
       ]);
     } else {
       alert("Not a valid address: " + addr);
