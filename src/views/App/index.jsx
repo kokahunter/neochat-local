@@ -39,19 +39,21 @@ class App extends React.Component {
     };
   }
   componentDidMount() {
-    this.props.nos.getAddress().then(address => {
-      this.state.userAddress = address;
-      this.setState({
-        userAddress: this.state.userAddress
-      });
-      this.getUserPK().then(data => {
-        this.state.userPkey = data;
+    if (this.props.nos.exists) {
+      this.props.nos.getAddress().then(address => {
+        this.state.userAddress = address;
         this.setState({
-          userPkey: this.state.userPkey
+          userAddress: this.state.userAddress
         });
+        this.getUserPK().then(data => {
+          this.state.userPkey = data;
+          this.setState({
+            userPkey: this.state.userPkey
+          });
+        });
+        this.getUserAccount(this.state.scriptHash, this.state.userAddress);
       });
-      this.getUserAccount(this.state.scriptHash, this.state.userAddress);
-    });
+    }
   }
 
   getUserPK = async () => "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a";
@@ -141,11 +143,11 @@ class App extends React.Component {
       })
       .catch(err => alert(`Error: ${err.message}`));
   };
-  getReceiverPK = async uuid => {
+  getReceiverData = async uuid => {
     console.log(`uuid ${uuid}`);
-    const pk = await this.handleGetStorage(this.state.scriptHash, uuid, false, false);
-    const tmp = this.deserialize(pk, "account");
-    return tmp[9];
+    const data = await this.handleGetStorage(this.state.scriptHash, uuid, false, false);
+    const tmp = this.deserialize(data, "account");
+    return tmp;
   };
   verifyReceiver = async addr => {
     const uuid = await this.handleGetStorage(
@@ -157,19 +159,36 @@ class App extends React.Component {
     if (uuid === null) {
       return false;
     }
-    const pk = await this.getReceiverPK(uuid);
-    return pk;
+    const data = await this.getReceiverData(uuid);
+    return data;
   };
   concatBytes = (source, start, length) => {
     let temp = "";
     for (let i = start; i < length; i += 1) temp += source[i];
     return temp;
   };
-  createChat = addr => {
-    // var timestamp = (new Date()).getTime();
-    // var chat = addr + "-" + timestamp;
-    this.state.menu[addr] = addr;
-    this.setState({ menu: this.state.menu });
+  createChat = async (addr, encrypted) => {
+    /*
+    menu[addr] = array:
+      0: address
+      1: boolean encrypted. True if receiver has account
+      2: unique id
+      3: display name
+      4: public key
+    */
+    if (this.state.menu[addr] === undefined) {
+      if (encrypted) {
+        const data = await this.verifyReceiver(addr);
+        this.state.menu[addr] = [addr, encrypted, data[1], data[2], data[9]];
+      } else {
+        this.state.menu[addr] = [addr, encrypted];
+      }
+      this.setState({ menu: this.state.menu });
+    } else if (this.state.menu[addr][1] === false && encrypted === true) {
+      const data = await this.verifyReceiver(addr);
+      this.state.menu[addr] = [addr, encrypted, data[1], data[2], data[9]];
+      this.setState({ menu: this.state.menu });
+    }
   };
 
   handleClick = e => {
@@ -347,7 +366,7 @@ class App extends React.Component {
           if (i === 0) {
             // console.log(u.hexstring2str(data));
             data = u.hexstring2str(data);
-          } else if (i === 3) {
+          } else if (i === 3 || i === 4) {
             data = parseInt(data, 16) === 1;
           } else {
             data = wallet.getAddressFromScriptHash(u.reverseHex(data));
@@ -404,6 +423,8 @@ class App extends React.Component {
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
           const ipfsT = deserialized[3];
+          const encryptedT = deserialized[4];
+          console.log(JSON.stringify(deserialized));
           console.log(`MESSAGE ${msgD}`);
           console.log(`TIME ${timeD}`);
           console.log(`ADDRESS ${addrD}`);
@@ -416,9 +437,11 @@ class App extends React.Component {
             message: msgD,
             time: timeD,
             direction: "receive",
-            ipfs: ipfsT
+            ipfs: ipfsT,
+            encrypted: encryptedT
           };
-          createChat(addrD);
+          // TODO: create chat with account data (address, pkey, name, unique name)
+          createChat(addrD, encryptedT);
           count += 1;
         });
         console.log(`Received messages: ${JSON.stringify(tmp.receive)}`);
@@ -452,6 +475,7 @@ class App extends React.Component {
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
           const ipfsT = deserialized[3];
+          const encryptedT = deserialized[4];
           if (tmp.send[addrD] === undefined) {
             count = 0;
             tmp.send[addrD] = [{}];
@@ -461,9 +485,10 @@ class App extends React.Component {
             message: msgD,
             time: timeD,
             direction: "send",
-            ipfs: ipfsT
+            ipfs: ipfsT,
+            encrypted: encryptedT
           };
-          createChat(addrD);
+          createChat(addrD, encryptedT);
           count += 1;
         });
         console.log(`Sent messages:${JSON.stringify(tmp.send)}`);
@@ -513,7 +538,7 @@ class App extends React.Component {
         encrypted
       ]);
     } else {
-      alert("Not a valid address: " + addr);
+      alert(`Not a valid address: ${addr}`);
     }
   };
   render() {

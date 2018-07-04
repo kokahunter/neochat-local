@@ -35,11 +35,10 @@ class ChatContent extends React.Component {
     this.handleSendMessage = this.handleSendMessage.bind(this);
   }
   handleSendMessage = async (addr, message) => {
-    const pk = await this.props.verifyReceiver(addr);
+    let pk = await this.props.verifyReceiver(addr);
     let send = false;
     let encrypted = 0;
     // if pk = false then receiver is not registered. Message cannot be encrypted
-    console.log(`pk ${pk}`);
     if (pk === false) {
       if (window.confirm("Receiver is not registered. Message will not be encrypted. Continue?")) {
         send = true;
@@ -48,6 +47,7 @@ class ChatContent extends React.Component {
     } else {
       send = true;
       encrypted = 1;
+      pk = pk[9];
     }
     if (send) {
       this.props.onInvokeSend(addr, message, pk, encrypted);
