@@ -253,7 +253,6 @@ class App extends React.Component {
       this.setState({ filteredMessages: [] });
 
       this.getMessageCount().then(() => {
-        // console.log("recv:" + this.state.recvCount + "send:" + this.state.sendCount);
         this.fetchMessages(
           this.state.scriptHash,
           this.state.userAddress,
@@ -388,7 +387,7 @@ class App extends React.Component {
     return rawArray;
   };
   fetchMessages = async (scriptHash, addr, recvCount, sendCount) => {
-    // console.log(`ASF${recvCount}`);
+    //console.log(`ASF${sendCount}`);
     const { createChat } = this;
     // get received messages
     // console.log(`Getting ${recvCount} received messages`);
@@ -399,6 +398,7 @@ class App extends React.Component {
     let deserialized = [];
     let promises = [];
     const { deserialize } = this;
+    const count = [];
     if (recvCount > 0) {
       promises = [];
       for (let i = 0; i < recvCount; i += 1) {
@@ -415,7 +415,6 @@ class App extends React.Component {
       }
 
       Promise.all(promises).then(results => {
-        let count = 0;
         results.forEach(entry => {
           deserialized = [];
           deserialized = deserialize(entry, "message");
@@ -429,11 +428,11 @@ class App extends React.Component {
           console.log(`TIME ${timeD}`);
           console.log(`ADDRESS ${addrD}`);
           if (tmp.receive[addrD] === undefined) {
-            count = 0;
+            count[addrD] = 0;
             tmp.receive[addrD] = [{}];
           }
-          tmp.receive[addrD][count] = {
-            key: `receive${count}`,
+          tmp.receive[addrD][count[addrD]] = {
+            key: `receive${count[addrD]}`,
             message: msgD,
             time: timeD,
             direction: "receive",
@@ -442,7 +441,7 @@ class App extends React.Component {
           };
           // TODO: create chat with account data (address, pkey, name, unique name)
           createChat(addrD, encryptedT);
-          count += 1;
+          count[addrD] += 1;
         });
         console.log(`Received messages: ${JSON.stringify(tmp.receive)}`);
         this.state.chatMessages = tmp;
@@ -450,7 +449,7 @@ class App extends React.Component {
       });
     }
     // get send messages
-    // console.log(`Getting ${sendCount} sent messages`);
+    console.log(`Getting ${sendCount} sent messages`);
     if (sendCount > 0) {
       promises = [];
       for (let i = 0; i < sendCount; i += 1) {
@@ -466,7 +465,6 @@ class App extends React.Component {
         );
       }
       Promise.all(promises).then(results => {
-        let count = 0;
         results.forEach(entry => {
           deserialized = [];
 
@@ -477,11 +475,11 @@ class App extends React.Component {
           const ipfsT = deserialized[3];
           const encryptedT = deserialized[4];
           if (tmp.send[addrD] === undefined) {
-            count = 0;
+            count[addrD] = 0;
             tmp.send[addrD] = [{}];
           }
-          tmp.send[addrD][count] = {
-            key: `send${count}`,
+          tmp.send[addrD][count[addrD]] = {
+            key: `send${count[addrD]}`,
             message: msgD,
             time: timeD,
             direction: "send",
@@ -489,7 +487,7 @@ class App extends React.Component {
             encrypted: encryptedT
           };
           createChat(addrD, encryptedT);
-          count += 1;
+          count[addrD] += 1;
         });
         console.log(`Sent messages:${JSON.stringify(tmp.send)}`);
         this.state.chatMessages = tmp;
