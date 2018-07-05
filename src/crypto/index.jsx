@@ -15,43 +15,16 @@ export function crypto() {
   console.log(`Bob key: ${bobKey.toString("hex")}`);
 }
 
-export function generateSecret(pubB, secretA) {
-  const a = createECDH("secp256r1");
-  a.setPrivateKey(secretA, "hex");
-  return a.computeSecret(pubB, "hex");
+export function encrypt(pk, data) {
+  return "E " + data;
 }
 
-export function test() {
-  // console.log("Person A address: AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y,
-  // WIF: KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr");
+export function decrypt(pk, iv, mac, data) {
+  return "D " + data;
+}
 
-  // console.log("Person B address: AU4iCQxqVMcn2AFbhQp9HG9jnQSKau93bn,
-  // WIF: KwcZKTd1n1W5zmuxMijgHpemakGGzUBCzGcCmqrKrzHBWU7ctzn2");
-  const privA = wallet.getPrivateKeyFromWIF("KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr");
-  const pubA = wallet.getPublicKeyFromPrivateKey(privA);
-
-  const privB = wallet.getPrivateKeyFromWIF("KwcZKTd1n1W5zmuxMijgHpemakGGzUBCzGcCmqrKrzHBWU7ctzn2");
-  const pubB = wallet.getPublicKeyFromPrivateKey(privB);
-
-  const a = createECDH("secp256r1");
-  a.setPrivateKey(privA, "hex");
-  const b = createECDH("secp256r1");
-  b.setPrivateKey(privB, "hex");
-  const aSecret = a.computeSecret(pubB, "hex");
-  console.log(`a secret: ${aSecret.toString("hex")}`);
-
-  const bSecret = b.computeSecret(pubA, "hex");
-  console.log(`b secret: ${bSecret.toString("hex")}`);
-
-  const cipher = createCipher("aes-256-ctr", bSecret);
-  let crypted = cipher.update("hello there ... :) ", "utf8", "hex");
-  crypted += cipher.final("hex");
-  console.log(`crypted message :${crypted}`);
-
-  const decipher = createCipher("aes-256-ctr", bSecret);
-  let decrypted = decipher.update(crypted, "hex", "utf8");
-  decrypted += decipher.final("utf8");
-  console.log(`encrypt message :${decrypted}`);
+export function getPublicKey() {
+  return "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a";
 }
 
 export default crypto;

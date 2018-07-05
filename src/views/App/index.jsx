@@ -18,7 +18,7 @@ import ChatMenu from "./../../components/ChatMenu";
 import ChatContent from "./../../components/ChatContent";
 import NosGrey from "./../../nos_grey.svg";
 import NeoLogo from "./../../neo.svg";
-// import { crypto, test } from "./../../crypto";
+import { encrypt, decrypt, getPublicKey } from "./../../crypto";
 
 const { injectNOS, nosProps } = react.default;
 class App extends React.Component {
@@ -56,7 +56,7 @@ class App extends React.Component {
     }
   }
 
-  getUserPK = async () => "031a6c6fbbdf02ca351745fa86b9ba5a9452d785ac4f7fc2b7548ca2a46c4fcf4a";
+  getUserPK = async () => getPublicKey();
 
   getDateTime = unixTimestamp => {
     const date = new Date(unixTimestamp * 1000);
@@ -66,7 +66,6 @@ class App extends React.Component {
     return `${date.toLocaleDateString()} ${hours}:${minutes.substr(-2)}:${seconds.substr(-2)}`;
   };
   getUserData = async (scriptHash, uuid) => {
-    console.log(uuid);
     await this.handleGetStorage(scriptHash, uuid, false, false)
       .then(data => {
         if (data != null) {
@@ -88,7 +87,6 @@ class App extends React.Component {
             userAccount: this.state.userAccount,
             registered: true
           });
-          console.log(JSON.stringify(this.state.userAccount));
         }
       })
       .catch(err => alert(`getUserData Error: ${err.message}`));
@@ -144,7 +142,6 @@ class App extends React.Component {
       .catch(err => alert(`Error: ${err.message}`));
   };
   getReceiverData = async uuid => {
-    console.log(`uuid ${uuid}`);
     const data = await this.handleGetStorage(this.state.scriptHash, uuid, false, false);
     const tmp = this.deserialize(data, "account");
     return tmp;
@@ -180,31 +177,31 @@ class App extends React.Component {
       if (encrypted) {
         const data = await this.verifyReceiver(addr);
         this.state.menu[addr] = [addr, encrypted, data[1], data[2], data[9]];
-      } else {
-        this.state.menu[addr] = [addr, encrypted];
+        // this.setState({ menu: this.state.menu });
+        return this.state.menu;
       }
-      this.setState({ menu: this.state.menu });
+      this.state.menu[addr] = [addr, encrypted];
+      return this.state.menu;
+      // this.setState({ menu: this.state.menu });
     } else if (this.state.menu[addr][1] === false && encrypted === true) {
       const data = await this.verifyReceiver(addr);
       this.state.menu[addr] = [addr, encrypted, data[1], data[2], data[9]];
-      this.setState({ menu: this.state.menu });
+      // this.setState({ menu: this.state.menu });
+      return this.state.menu;
     }
+    return false;
   };
 
   handleClick = e => {
     const clickKey = e;
     if (clickKey.length === 34) {
       // address handle chat filtered state messages
-      console.log("OK");
       const sortable = [];
       // send messages
       if (this.state.chatMessages.send[clickKey] !== undefined) {
         for (let i = 0; i < this.state.chatMessages.send[clickKey].length; i += 1) {
-          console.log(`send${i}`);
           // for(var [key,message,time] in this.state.chatMessages["send"][e.key]){
-          // console.log(JSON.stringify(key));
           const tmp = this.state.chatMessages.send[clickKey][i];
-
           const { key, time, message, direction } = tmp;
           const dateTime = this.getDateTime(tmp.time);
           // const key = this.state.chatMessages.send[clickKey][i].key;
@@ -224,14 +221,10 @@ class App extends React.Component {
       // receive messages
       if (this.state.chatMessages.receive[clickKey] !== undefined) {
         for (let i = 0; i < this.state.chatMessages.receive[clickKey].length; i += 1) {
-          console.log(`recv${i}`);
           // for(var [key,message,time] in this.state.chatMessages["send"][e.key]){
-          // console.log(JSON.stringify(key));
           const tmp = this.state.chatMessages.receive[clickKey][i];
-
           const { key, time, message, direction } = tmp;
           const dateTime = this.getDateTime(tmp.time);
-
           // var key = this.state.chatMessages.receive[clickKey][i].key;
           // var time = this.state.chatMessages.receive[clickKey][i].time;
           // var message = this.state.chatMessages.receive[clickKey][i].message;
@@ -247,7 +240,6 @@ class App extends React.Component {
         }
       }
       sortable.sort((a, b) => a.time - b.time);
-      console.log(`Set sorted by time messages for ${clickKey} :${JSON.stringify(sortable)}`);
       this.setState({ filteredMessages: sortable });
     } else if (clickKey === "reload") {
       this.setState({ filteredMessages: [] });
@@ -387,7 +379,7 @@ class App extends React.Component {
     return rawArray;
   };
   fetchMessages = async (scriptHash, addr, recvCount, sendCount) => {
-    //console.log(`ASF${sendCount}`);
+    // console.log(`ASF${sendCount}`);
     const { createChat } = this;
     // get received messages
     // console.log(`Getting ${recvCount} received messages`);
@@ -398,7 +390,6 @@ class App extends React.Component {
     let deserialized = [];
     let promises = [];
     const { deserialize } = this;
-    const count = [];
     if (recvCount > 0) {
       promises = [];
       for (let i = 0; i < recvCount; i += 1) {
@@ -415,21 +406,25 @@ class App extends React.Component {
       }
 
       Promise.all(promises).then(results => {
-        results.forEach(entry => {
+        const count = [];
+        results.forEach(async entry => {
           deserialized = [];
           deserialized = deserialize(entry, "message");
-          const msgD = deserialized[0];
+          let msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
           const ipfsT = deserialized[3];
           const encryptedT = deserialized[4];
-          console.log(JSON.stringify(deserialized));
-          console.log(`MESSAGE ${msgD}`);
-          console.log(`TIME ${timeD}`);
-          console.log(`ADDRESS ${addrD}`);
+          const data = await createChat(addrD, encryptedT);
+          if (data !== false) {
+            this.setState({ menu: data });
+          }
           if (tmp.receive[addrD] === undefined) {
             count[addrD] = 0;
             tmp.receive[addrD] = [{}];
+          }
+          if (encryptedT) {
+            msgD = decrypt(this.state.menu[addrD][4], "", "", msgD);
           }
           tmp.receive[addrD][count[addrD]] = {
             key: `receive${count[addrD]}`,
@@ -439,16 +434,11 @@ class App extends React.Component {
             ipfs: ipfsT,
             encrypted: encryptedT
           };
-          createChat(addrD, encryptedT);
           count[addrD] += 1;
         });
-        console.log(`Received messages: ${JSON.stringify(tmp.receive)}`);
-        this.state.chatMessages = tmp;
-        this.setState({ chatMessages: this.state.chatMessages });
       });
     }
     // get send messages
-    console.log(`Getting ${sendCount} sent messages`);
     if (sendCount > 0) {
       promises = [];
       for (let i = 0; i < sendCount; i += 1) {
@@ -464,35 +454,40 @@ class App extends React.Component {
         );
       }
       Promise.all(promises).then(results => {
-        results.forEach(entry => {
+        const countt = [];
+        results.forEach(async entry => {
           deserialized = [];
-
-          deserialized = deserialize(entry, "message");
-          const msgD = deserialized[0];
+          deserialized = await deserialize(entry, "message");
+          let msgD = deserialized[0];
           const timeD = parseInt(deserialized[1], 16);
           const addrD = deserialized[2];
           const ipfsT = deserialized[3];
           const encryptedT = deserialized[4];
+          const data = await createChat(addrD, encryptedT);
+          if (data !== false) {
+            this.setState({ menu: data });
+          }
           if (tmp.send[addrD] === undefined) {
-            count[addrD] = 0;
+            countt[addrD] = 0;
             tmp.send[addrD] = [{}];
           }
-          tmp.send[addrD][count[addrD]] = {
-            key: `send${count[addrD]}`,
+          if (encryptedT) {
+            msgD = await decrypt(this.state.menu[addrD][4], "", "", msgD);
+          }
+          tmp.send[addrD][countt[addrD]] = {
+            key: `send${countt[addrD]}`,
             message: msgD,
             time: timeD,
             direction: "send",
             ipfs: ipfsT,
             encrypted: encryptedT
           };
-          createChat(addrD, encryptedT);
-          count[addrD] += 1;
+          countt[addrD] += 1;
         });
-        console.log(`Sent messages:${JSON.stringify(tmp.send)}`);
-        this.state.chatMessages = tmp;
-        this.setState({ chatMessages: this.state.chatMessages });
       });
     }
+    this.state.chatMessages = tmp;
+    await this.setState({ chatMessages: this.state.chatMessages });
   };
   handleInvoke = (scriptHash, operation, args) =>
     this.props.nos
@@ -506,11 +501,6 @@ class App extends React.Component {
       .catch(err => alert(`Storage Error: ${err.message}`));
 
   invokeRegister = (uuid, name) => {
-    console.log("Invoke 'register'");
-    console.log(`Address: ${this.state.userAddress}`);
-    console.log(`uuid: ${uuid}`);
-    console.log(`name: ${name}`);
-    console.log(`pkey: ${this.state.userPkey}`);
     this.handleInvoke(this.state.scriptHash, "register", [
       unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
       uuid,
@@ -520,20 +510,26 @@ class App extends React.Component {
   };
 
   invokeSendChat = (addr, message, pk, encrypted) => {
-    console.log("Invoke 'sendMessage'");
-    console.log(`from: ${this.state.userAddress}`);
-    console.log(`to: ${addr}`);
-    console.log(`message: ${message}`);
     if (wallet.isAddress(addr)) {
-      // TODO validate PK
-      // TODO encryption
-      this.handleInvoke(this.state.scriptHash, "sendMessage", [
-        unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
-        unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
-        message,
-        0 /* IPFS parameter always false, until nOS storage or other storage will be used */,
-        encrypted
-      ]);
+      let messageE = message;
+      let valid = true;
+
+      if (encrypted === 1 && wallet.isPublicKey(pk)) {
+        messageE = encrypt(pk, message);
+      } else {
+        valid = false;
+      }
+      if (valid) {
+        this.handleInvoke(this.state.scriptHash, "sendMessage", [
+          unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(this.state.userAddress))),
+          unhexlify(u.reverseHex(wallet.getScriptHashFromAddress(addr))),
+          messageE,
+          0 /* IPFS parameter always false, until nOS storage or other storage will be used */,
+          encrypted
+        ]);
+      } else {
+        alert(`Not a valid public key of receiver: ${pk}`);
+      }
     } else {
       alert(`Not a valid address: ${addr}`);
     }
