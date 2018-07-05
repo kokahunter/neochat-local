@@ -35,6 +35,7 @@ class ChatContent extends React.Component {
     this.handleSendMessage = this.handleSendMessage.bind(this);
   }
   handleSendMessage = async (addr, message) => {
+    // validate message length
     let pk = await this.props.verifyReceiver(addr);
     let send = false;
     let encrypted = 0;

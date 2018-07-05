@@ -439,7 +439,6 @@ class App extends React.Component {
             ipfs: ipfsT,
             encrypted: encryptedT
           };
-          // TODO: create chat with account data (address, pkey, name, unique name)
           createChat(addrD, encryptedT);
           count[addrD] += 1;
         });
