@@ -40,43 +40,6 @@ def PutThree(ctx, one, two, three, value):
     key = concat(one,two)
     key2 = concat(key,three)
     Put(ctx, key2, value)
-def updateTweetCount(ctx, key, operation):
-    """
-    Update the count for the given index for the tweet at storage(key)
-    """
-    if operation == "comment":
-        index = 5
-    elif operation == "retweet":
-        index = 6
-    elif operation == "like":
-        index = 7
-    else:
-        Notify("Unknown operation for updateTweetCount()")
-        return False
-    temp = Get(ctx, key)
-    if not temp == False:
-        a_save_d = Deserialize(temp)
-        a_count = a_save_d[index]
-        aa_count = a_count + 1
-        a_save_d[index] = aa_count
-        a_save_s = Serialize(a_save_d)
-        Put(ctx, key, a_save_s)
-        return aa_count
-    Notify("Tweet does not exist")
-    return False
-
-def updateAccCount(ctx, uid, index, noCount):
-    a_save = Get(ctx, uid)
-    a_save_d = Deserialize(a_save)
-    a_count = a_save_d[index]
-    aa_count = a_count + 1
-    a_save_d[index] = aa_count
-    a_save_s = Serialize(a_save_d)
-    Put(ctx, uid, a_save_s)
-    if noCount:
-        return a_save_d
-    else:
-        return aa_count
 
 def ValidateIPFS(ipfs):
     if ipfs == 0:
