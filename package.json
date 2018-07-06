@@ -34,7 +34,6 @@
   "dependencies": {
     "@cityofzion/neon-js": "3.9.0",
     "@nosplatform/api-functions": "0.2.2",
-    "antd": "^3.5.3",
     "babel-polyfill": "6.26.0",
     "binascii": "0.0.2",
     "crypto-browserify": "^3.12.0",
