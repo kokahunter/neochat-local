@@ -1,7 +1,7 @@
 {
-  "name": "dapp-starter-kit",
+  "name": "neochat",
   "version": "1.0.0",
-  "description": "Create a dapp on the nOS platform",
+  "description": "Secure messaging DApp on nOS (NEO blockchain)",
   "scripts": {
     "build": "",
     "precommit": "yarn lint",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nos/dapp-starter-kit.git"
+    "url": "git+https://github.com/kokahunter/neochat-local.git"
   },
   "license": "MIT",
   "keywords": [
@@ -26,11 +26,11 @@
     "HTML",
     "starter"
   ],
-  "author": "nOS <contact@nos.io>",
+  "author": "kokahunter",
   "bugs": {
-    "url": "https://github.com/nos/dapp-starter-kit/issues"
+    "url": "https://github.com/kokahunter/neochat-local/issues"
   },
-  "homepage": "https://github.com/nos/dapp-starter-kit#readme",
+  "homepage": "https://github.com/kokahunter/neochat-local#readme",
   "dependencies": {
     "@cityofzion/neon-js": "3.9.0",
     "@nosplatform/api-functions": "0.2.2",
