@@ -45,6 +45,12 @@ class ChatContent extends React.Component {
         send = true;
         encrypted = 0;
       }
+    } else if (Object.keys(this.props.userAccount).length === 0) {
+      if (window.confirm("You are not registered. Message will not be encrypted. Continue?")) {
+        send = true;
+        encrypted = 0;
+        pk = false;
+      }
     } else {
       send = true;
       encrypted = 1;
