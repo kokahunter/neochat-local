@@ -33,7 +33,7 @@ class App extends React.Component {
       userPkey: "",
       menu: {},
       filteredMessages: [],
-      scriptHash: "845e6c66730365f8a86030e37e3ba3baed3fba8e",
+      scriptHash: "31e7d16d418156600a7d1f6280b409ff4d707302",
       registered: false,
       userAccount: {}
     };
@@ -514,10 +514,12 @@ class App extends React.Component {
       let messageE = message;
       let valid = true;
 
-      if (encrypted === 1 && wallet.isPublicKey(pk)) {
-        messageE = encrypt(pk, message);
-      } else {
-        valid = false;
+      if (pk !== false) {
+        if (encrypted === 1 && wallet.isPublicKey(pk)) {
+          messageE = encrypt(pk, message);
+        } else {
+          valid = false;
+        }
       }
       if (valid) {
         this.handleInvoke(this.state.scriptHash, "sendMessage", [
