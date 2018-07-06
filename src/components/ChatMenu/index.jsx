@@ -7,10 +7,8 @@ import Row from "react-bootstrap/lib/Row";
 import Col from "react-bootstrap/lib/Col";
 
 const { injectNOS } = react.default;
+// eslint-disable-next-line react/prefer-stateless-function
 class ChatMenu extends React.Component {
-  clickBack = e => {
-    alert(console.log(e));
-  };
   render() {
     const { classes, onClick } = this.props;
     return (

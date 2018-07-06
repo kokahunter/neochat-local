@@ -54,7 +54,7 @@ class ChatContent extends React.Component {
     } else {
       send = true;
       encrypted = 1;
-      pk = pk[9];
+      [, , , , , , , , , pk] = pk;
     }
     if (send) {
       this.props.onInvokeSend(addr, message, pk, encrypted);

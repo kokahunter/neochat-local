@@ -538,6 +538,7 @@ class App extends React.Component {
   };
   render() {
     const { classes } = this.props;
+    const { exists } = this.props.nos;
     return (
       <Grid className={classes.neoChat}>
         <Row className={classes.neoChatBody}>
@@ -553,38 +554,40 @@ class App extends React.Component {
                   <span className={classes.headerText5}>{this.state.userAddress}</span>
                 </Col>
                 <Col className={classes.siderHeaderInner} sm={1}>
-                  <DropdownButton
-                    bsStyle="default"
-                    title={
-                      <div style={{ display: "inline-block" }}>
-                        <Glyphicon glyph="cog" />
-                      </div>
-                    }
-                    noCaret
-                    key="1"
-                    bsSize="small"
-                    id="dropdown-setting-1"
-                  >
-                    <MenuItem eventKey="reload" onSelect={this.handleClick}>
-                      Load messages
-                    </MenuItem>
-                    <MenuItem eventKey="new" onSelect={this.handleClick}>
-                      New message
-                    </MenuItem>
-                    {this.state.registered ? (
-                      <MenuItem eventKey="account" onSelect={this.handleClick}>
-                        Account
+                  {exists ? (
+                    <DropdownButton
+                      bsStyle="default"
+                      title={
+                        <div style={{ display: "inline-block" }}>
+                          <Glyphicon glyph="cog" />
+                        </div>
+                      }
+                      noCaret
+                      key="1"
+                      bsSize="small"
+                      id="dropdown-setting-1"
+                    >
+                      <MenuItem eventKey="reload" onSelect={this.handleClick}>
+                        Load messages
                       </MenuItem>
-                    ) : (
-                      <MenuItem eventKey="register" onSelect={this.handleClick}>
-                        Register
+                      <MenuItem eventKey="new" onSelect={this.handleClick}>
+                        New message
                       </MenuItem>
-                    )}
-                    <MenuItem divider />
-                    <MenuItem eventKey="welcome" onSelect={this.handleClick}>
-                      About
-                    </MenuItem>
-                  </DropdownButton>
+                      {this.state.registered ? (
+                        <MenuItem eventKey="account" onSelect={this.handleClick}>
+                          Account
+                        </MenuItem>
+                      ) : (
+                        <MenuItem eventKey="register" onSelect={this.handleClick}>
+                          Register
+                        </MenuItem>
+                      )}
+                      <MenuItem divider />
+                      <MenuItem eventKey="welcome" onSelect={this.handleClick}>
+                        About
+                      </MenuItem>
+                    </DropdownButton>
+                  ) : null}
                 </Col>
               </Row>
               <Row className={classes.siderSearch}>
