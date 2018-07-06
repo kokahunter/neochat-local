@@ -10,7 +10,7 @@ import { JssProvider } from "react-jss";
 import PropTypes from "prop-types";
 import App from "./views/App";
 
-import { StoreProvider, defaultStore } from "./store";
+import { StoreProvider } from "./store";
 
 const jss = createJss();
 
@@ -20,17 +20,6 @@ class NeoChat extends React.Component {
   static propTypes = {
     children: PropTypes.objectOf(PropTypes.any).isRequired
   };
-
-  /* eslint-disable react/no-unused-state */
-  state = Object.assign(defaultStore, {
-    setRecvCount: recvCount => {
-      Object.assign(this.state.recvCount, recvCount);
-    },
-    setSendCount: sendCount => {
-      Object.assign(this.state.sendCount, sendCount);
-    }
-  });
-  /* eslint-enable */
 
   render() {
     const { children } = this.props;
