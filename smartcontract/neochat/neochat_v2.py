@@ -7,8 +7,8 @@ Author: https://github.com/kokahunter
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness, Notify, Log
 from boa.interop.Neo.Storage import GetContext
-from send.Message import sendMessage, tweet, retweet, comment, like, unLike
-from account.AccountHelper import register, isRegistered, changeName, follow, unFollow
+from send.Message import sendMessage
+from account.AccountHelper import register, isRegistered, changeName
 
 CONTRACT_OWNER = "FASFFASF"
 
@@ -59,7 +59,7 @@ def Main(operation, args):
             if len(args[2]) <= 247 and len(args[2] > 0):
                 return sendMessage(ctx, args[0], args[1], args[2], args[3], args[4])
             Notify("Message must have a length between 1 and 247")
-            #todo: check ipfs hash length
+            #todo: check ipfs hash length            
         elif operation == "register" and len(args) == 4:
             """
             Args required for register:
@@ -69,6 +69,7 @@ def Main(operation, args):
                 3 -> public key
             """
             Notify("In operation register")
+            #todo: check name and unique name length
             return register(ctx, args)
         uid = isRegistered(ctx, args[0])
         if not uid == False:
