@@ -38,7 +38,7 @@ class App extends React.Component {
       userAccount: {}
     };
   }
-  componentDidMount() {
+  componentWillMount() {
     if (this.props.nos.exists) {
       this.props.nos.getAddress().then(address => {
         this.state.userAddress = address;
@@ -89,6 +89,7 @@ class App extends React.Component {
           });
         }
       })
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`getUserData Error: ${err.message}`));
   };
   getUserAccount = async (scriptHash, addr) => {
@@ -107,6 +108,7 @@ class App extends React.Component {
           this.getUserData(scriptHash, data);
         }
       })
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`getUserAccount Error: ${err.message}`));
   };
   getMessageCount = async () => {
@@ -125,6 +127,7 @@ class App extends React.Component {
           recvCount: parseInt(data, 16)
         });
       })
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`Error: ${err.message}`));
   };
   getSendCount = async (scriptHash, addr) => {
@@ -139,6 +142,7 @@ class App extends React.Component {
           sendCount: parseInt(data, 16)
         });
       })
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`Error: ${err.message}`));
   };
   getReceiverData = async uuid => {
@@ -492,12 +496,15 @@ class App extends React.Component {
   handleInvoke = (scriptHash, operation, args) =>
     this.props.nos
       .invoke({ scriptHash, operation, args })
+      // eslint-disable-next-line no-alert
       .then(txid => alert(`Invoke txid: ${txid} `))
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`Error: ${err.message}`));
 
   handleGetStorage = async (scriptHash, key, encodeInput, decodeOutput) =>
     this.props.nos
       .getStorage({ scriptHash, key, encodeInput, decodeOutput })
+      // eslint-disable-next-line no-alert
       .catch(err => alert(`Storage Error: ${err.message}`));
 
   invokeRegister = (uuid, name) => {
@@ -530,9 +537,11 @@ class App extends React.Component {
           encrypted
         ]);
       } else {
+        // eslint-disable-next-line no-alert
         alert(`Not a valid public key of receiver: ${pk}`);
       }
     } else {
+      // eslint-disable-next-line no-alert
       alert(`Not a valid address: ${addr}`);
     }
   };

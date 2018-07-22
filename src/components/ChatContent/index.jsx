@@ -41,11 +41,13 @@ class ChatContent extends React.Component {
     let encrypted = 0;
     // if pk = false then receiver is not registered. Message cannot be encrypted
     if (pk === false) {
+      // eslint-disable-next-line no-alert
       if (window.confirm("Receiver is not registered. Message will not be encrypted. Continue?")) {
         send = true;
         encrypted = 0;
       }
     } else if (Object.keys(this.props.userAccount).length === 0) {
+      // eslint-disable-next-line no-alert
       if (window.confirm("You are not registered. Message will not be encrypted. Continue?")) {
         send = true;
         encrypted = 0;

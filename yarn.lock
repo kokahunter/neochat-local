@@ -6764,8 +6764,8 @@ tar@^4:
     yallist "^3.0.2"
 
 terser@^3.7.3:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-3.8.0.tgz#66a4f4f500d2c829faab840f318c49cc471d73ae"
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-3.8.1.tgz#cb70070ac9e0a71add169dfb63c0a64fca2738ac"
   dependencies:
     commander "~2.16.0"
     source-map "~0.6.1"
