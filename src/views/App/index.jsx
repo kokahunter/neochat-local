@@ -38,7 +38,7 @@ class App extends React.Component {
       userAccount: {}
     };
   }
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.nos.exists) {
       this.props.nos.getAddress().then(address => {
         this.state.userAddress = address;
