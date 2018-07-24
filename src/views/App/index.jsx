@@ -556,7 +556,7 @@ class App extends React.Component {
               <Row className={classes.chatHeader}>
                 <Col className={classes.siderHeaderInner} sm={1}>
                   <div className={classes.siderHeaderLogo}>
-                    <img alt="NeoLogo" className="img-responsive" src={NeoLogo} />
+                    <img alt="NeoLogo" className="img-responsive" src={`.${NeoLogo}`} />
                   </div>
                 </Col>
                 <Col className={classes.siderHeaderInner} sm={10}>
@@ -753,7 +753,7 @@ const styles = {
     overflowY: "auto",
     height: `calc(${100}% - ${120}px)`,
     border: `${1}px solid #f7f7f7`,
-    backgroundImage: `url(${NosGrey})`,
+    backgroundImage: `url(.${NosGrey})`,
     backgroundSize: "cover"
   },
   chatMessagesBody: {
