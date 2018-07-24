@@ -12,3 +12,6 @@ build/
 
 # Jest stuff
 coverage/
+smartcontract/neochat/account/__pycache__/AccountHelper.cpython-36.pyc
+smartcontract/neochat/send/__pycache__/Message.cpython-36.pyc
+smartcontract/neochat/storage/__pycache__/StorageHelper.cpython-36.pyc
