@@ -75,11 +75,6 @@ class App extends React.Component {
             uuid: tmp[1],
             name: tmp[2],
             time: this.getDateTime(tmp[3]),
-            tweets: tmp[4],
-            followers: tmp[5],
-            following: tmp[6],
-            unfollowed: tmp[7],
-            unfollowing: tmp[8],
             pkey: tmp[9]
           };
           this.state.registered = true;
@@ -642,7 +637,7 @@ class App extends React.Component {
 const styles = {
   "@import": "https://fonts.googleapis.com/css?family=Source+Sans+Pro",
   "@global html, body": {
-    fontFamily: "Source Sans Pro",
+    fontFamily: "Source Sans Pro,Helvetica,Arial,sans-serif",
     margin: 0,
     padding: 0,
     backgroundColor: "#f0f2f5"

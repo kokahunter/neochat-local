@@ -149,10 +149,18 @@ class ChatContent extends React.Component {
           <Row className={classes.chatMessages}>
             <Col sm={12} className={classes.chatMessagesBody}>
               <Row key="welcome" className={classes.message}>
-                <Col className={classes.messageReceive} sm={12}>
-                  <div className={classes.receiver}>
-                    <span className={classes.headerText3}>Getting startet</span>
-                    <div className={classes.messageText}>New message, load, send.</div>
+                <Col className={classes.messageSend} sm={12}>
+                  <div className={classes.sender}>
+                    <span className={classes.headerText3}>Alpha Version 0.1.0</span>
+                    <div className={classes.messageText}>
+                      <p>100% decentralized messenger</p>
+                      <p>Send / receive messages to / from any NEO address</p>
+                      <p>Send / receive private encrypted messages* to / from registered users</p>
+                      <p>
+                        * Encryption / decryption currently simulated by putting `E` for encryption
+                        and `D` for decryption in front of the message.
+                      </p>
+                    </div>
                   </div>
                 </Col>
               </Row>
