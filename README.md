@@ -2,58 +2,44 @@
   <img src="./neochat.png" /> 
 </p>
 
-<h1 align="center">neochat</h1>
+<h1 align="center">Neochat</h1>
 
 <p align="center">
-  This is a chat <strong>dApp</strong> on the <strong>nOS</strong> platform
+  Secure and fully decentralized messaging <strong>dApp</strong> on the <strong>nOS</strong> platform.
 </p>
 
 ## Purpose
-The goal of this project is to provide a chat dApp running on nOs for encrypted messaging on the NEO blockchain. This is a MVP and WIP, for example encyption is not yet implemented. 
+Todays messenger like Whatsapp offer great functionality and high comfort. In addition end-to-end encryption promise high security and privacy. 
 
+But how can you trust companies, that make money based on user preferences and interests? In addition these messengers are closed source. How can you verify, that no master key exists to expose your private messages? How can you prevent these companies from reading your contacts and constructing complex user profiles? 
+
+One answer is you can't. These business models and advertising platforms are unlikely to be changed in the near future.
+
+The other answer is to use a platform where trust is given at any time through blockchain technology and open source applications.
+
+#### Neochat provides a fully decentralized, trustless and open source messenger based on nOS and the NEO blockchain.
+
+## Features
+* 100% decentralized messenger
+* Send and receive messages (based on NEO addresses) for free
+* Register your account to enable encryption of messages *1
+
+### Features to be activated in the next versions:
+* End-to-end encryption
+* Attaching tokens/assets to messages
+* Emoji support
+* Media support with IPFS
+
+*1 Encryption to be implemented as soon as the nOS client activates that functionality.
 
 ## Setup
 ```bash
 $ git clone https://github.com/kokahunter/neochat-local.git
-$ neochat-local
-$ yarn
-$ yarn start
+$ cd neochat-local
+$ yarn install & yarn start
 ```
 
-Smart contract
-```
-build /smart-contracts/neochat.py
-import contract /smart-contracts/neochat.avm 0710 05 True False
-```
+#### Smart contract
+`copy` https://github.com/kokahunter/neochat-local/blob/master/smartcontract/neochat/neochat_v2.avm into the `smart-contracts` folder of neo-python
 
-## Testing
-Use `yarn test:local` or `npm run test:local` to run all tests locally. The `test` command is reserved for CI builds.
-
-## Document structure
-```
-react-stack-boilerplate
-├── src
-│   ├── __helpers__
-│   ├── __mocks__
-│   ├── assets
-│   ├── components
-│   │   └── __tests__
-│   │       └── __snapshots__
-│   ├── nos
-│   └── views
-│       └── __tests__
-│           └── __snapshots__
-├── .babelrc
-├── .eslintrc
-├── .gitignore
-├── CHANGELOG.md
-├── jest.config.js
-├── jest.setup.js
-├── package.json
-├── README.md
-└── yarn.lock
-```
-
-## Known issues
- * Build assets to dedicated subdirectory https://github.com/parcel-bundler/parcel/issues/233
- * Bundler sometimes freezes on Windows https://github.com/parcel-bundler/parcel/issues/900
+`import contract /smart-contracts/neochat_v2.avm 0710 05 True False`
